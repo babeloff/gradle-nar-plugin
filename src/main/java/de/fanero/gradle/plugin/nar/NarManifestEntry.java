@@ -1,4 +1,4 @@
-package de.fanero.gradle.plugin.nar
+package de.fanero.gradle.plugin.nar;
 
 enum NarManifestEntry {
     NAR_GROUP("Nar-Group"),
@@ -6,15 +6,15 @@ enum NarManifestEntry {
     NAR_VERSION("Nar-Version"),
     NAR_DEPENDENCY_GROUP("Nar-Dependency-Group"),
     NAR_DEPENDENCY_ID("Nar-Dependency-Id"),
-    NAR_DEPENDENCY_VERSION("Nar-Dependency-Version")
+    NAR_DEPENDENCY_VERSION("Nar-Dependency-Version");
 
-    private final String manifestKey
+    private final String manifestKey;
 
     NarManifestEntry(String manifestKey) {
-        this.manifestKey = manifestKey
+        this.manifestKey = manifestKey;
     }
 
     String getManifestKey() {
-        return manifestKey
+        return manifestKey;
     }
 }

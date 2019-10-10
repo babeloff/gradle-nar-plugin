@@ -5,20 +5,20 @@ A gradle plugin to create nar files for [Apache nifi](http://nifi.apache.org).
 ## Installation
 To use the plugin, add the bintray repository to your script and add the plugin dependency:
 
-```groovy
+```kotlin
 buildscript {
     repositories {
         mavenCentral()
         maven {
-            url 'http://dl.bintray.com/sponiro/gradle-plugins'
+            url = uri("http://dl.bintray.com/sponiro/gradle-plugins")
         }
     }
     dependencies {
-        classpath group: 'de.fanero.gradle.plugin.nar', name: 'gradle-nar-plugin', version: '0.3'
+        classpath (group="de.fanero.gradle.plugin.nar", name="gradle-nar-plugin", version="0.3")
     }
 }
 
-apply plugin: 'de.fanero.gradle.plugin.nar'
+apply(plugin="de.fanero.gradle.plugin.nar")
 ```
 ## Usage
 
@@ -42,9 +42,9 @@ To tell the plugin to add a parent you have to add a nar dependency to the nar c
 The nar configuration is created by the plugin.
 Add the parent nar like this:
 
-```groovy
+```kotlin
 dependencies {
-    nar 'org.apache.nifi:nifi-standard-services-api-nar:0.2.1'
+    nar("org.apache.nifi:nifi-standard-services-api-nar:0.2.1")
 }
 ```
 
@@ -71,10 +71,12 @@ Nar-Dependency-Version | nar config version
 The plugin respects manifest overrides from the user.
 For example:
 
-```groovy
+```kotlin
 nar {
     manifest {
-        attributes 'Nar-Group': 'overriden-nar-group-value'
+        attributes (
+            "Nar-Group" to "overriden-nar-group-value"
+        )
     }
 }
 ```
@@ -86,7 +88,7 @@ A full description can be found at https://docs.gradle.org/current/userguide/jav
 Version 0.1 and 0.2 do not add the parent nar in the nar configuration to the dependencies.
 To fix this you can either use version 0.3 or add the following code to your build:
 
-```groovy
+```kotlin
 configurations {
     compileOnly.extendsFrom(configurations.nar)
 }
