@@ -1,4 +1,4 @@
-package de.fanero.gradle.plugin.nar;
+package org.babeloff.gradle.plugin.nar;
 
 enum NarManifestEntry {
     NAR_GROUP("Nar-Group"),

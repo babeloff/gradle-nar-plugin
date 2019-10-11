@@ -1,10 +1,9 @@
-package de.fanero.gradle.plugin.nar
+package org.babeloff.gradle.plugin.nar
 
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testfixtures.ProjectBuilder
-import spock.lang.Ignore
 import spock.lang.Specification
 
 /**
@@ -12,7 +11,7 @@ import spock.lang.Specification
  */
 class NarPluginTest extends Specification {
 
-    public static final String PLUGIN = 'de.fanero.gradle.plugin.nar'
+    public static final String PLUGIN = 'org.babeloff.gradle.plugin.nar'
     public static final String NAR_TASK = 'nar'
 
     private Project project

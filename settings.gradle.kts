@@ -1,7 +1,15 @@
 
+// https://docs.gradle.org/current/javadoc/org/gradle/plugin/management/PluginManagementSpec.html
+
 pluginManagement {
-    resolutionStrategy {
+    plugins {
+
     }
+
+    resolutionStrategy {
+
+    }
+
     repositories {
         jcenter()
         gradlePluginPortal()

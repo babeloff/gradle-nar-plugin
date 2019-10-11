@@ -1,34 +1,25 @@
 
+
 // https://github.com/gradle-plugins/toolbox
 
 plugins {
-    java
-    `java-gradle-plugin`
+    id ("java")
+    id ("java-gradle-plugin")
+    id ("maven-publish")
+    id ("idea")
 }
-
-
 
 gradlePlugin {
     plugins {
         create("NarPlugin") {
             id = "nar-plugin"
-            implementationClass = "de.fanero.gradle.plugin.nar.Nar"
+            implementationClass = "org.babeloff.gradle.plugin.nar.NarPlugin"
         }
     }
 }
 
-
-
-//
-//apply plugin: "groovy"
-//apply plugin: "idea"
-//apply plugin: "maven-publish"
-//apply plugin: "java-gradle-plugin"
-//
-//group = "de.fanero.gradle.plugin.nar"
-//
-//sourceCompatibility = 1.7
-//
+group = "org.babeloff.gradle.plugin.nar"
+version = "2019.10.0"
 
 repositories {
     jcenter()
@@ -42,7 +33,7 @@ dependencies {
     testCompile(gradleTestKit())
     testImplementation(group="org.junit.jupiter", name="junit-jupiter-api", version="5.5.2")
     testRuntimeOnly(group="org.junit.jupiter", name="junit-jupiter-engine", version="5.5.2")
-    //testCompile (group="org.hamcrest", name="hamcrest-integration", version="1.3")
+    testCompile (group="org.spockframework", name="spock-core", version="1.3-groovy-2.5")
 }
 
 //
@@ -62,7 +53,12 @@ dependencies {
 //}
 //
 tasks {
-    wrapper {
+    withType<JavaCompile> {
+        //options. = "1.8"
+    }
+
+    withType<Wrapper> {
+        gradleVersion = findProperty("gradleLatestVersion") as? String ?: gradle.gradleVersion
         distributionType = Wrapper.DistributionType.ALL
     }
 
@@ -115,41 +111,41 @@ tasks {
 //    classifier = "sources"
 //    from sourceSets . main . allJava
 //}
+
+publishing {
+//    publications {
+//        mavenJava(MavenPublication) {
+//            from components . java
 //
-//    publishing {
-//        publications {
-//            mavenJava(MavenPublication) {
-//                from components . java
+//                    artifact sourceJar
 //
-//                        artifact sourceJar
+//                    pom.withXml {
+//                        Node root = asNode ()
+//                        root.appendNode("name", "Gradle Nar Plugin")
+//                        root.appendNode("description", "Gradle plugin to support development of Apache NiFi nar archives")
+//                        root.appendNode("url", "https://github.com/sponiro/gradle-nar-plugin")
+//                        root.appendNode("inceptionYear", "2015")
 //
-//                        pom.withXml {
-//                            Node root = asNode ()
-//                            root.appendNode("name", "Gradle Nar Plugin")
-//                            root.appendNode("description", "Gradle plugin to support development of Apache NiFi nar archives")
-//                            root.appendNode("url", "https://github.com/sponiro/gradle-nar-plugin")
-//                            root.appendNode("inceptionYear", "2015")
+//                        def scm = root . appendNode ("scm")
+//                        scm.appendNode("url", "https://github.com/sponiro/gradle-nar-plugin")
+//                        scm.appendNode("connection", "scm:https://github.com/sponiro/gradle-nar-plugin.git")
+//                        scm.appendNode("developerConnection", "scm:git:https://github.com/sponiro/gradle-nar-plugin.git")
 //
-//                            def scm = root . appendNode ("scm")
-//                            scm.appendNode("url", "https://github.com/sponiro/gradle-nar-plugin")
-//                            scm.appendNode("connection", "scm:https://github.com/sponiro/gradle-nar-plugin.git")
-//                            scm.appendNode("developerConnection", "scm:git:https://github.com/sponiro/gradle-nar-plugin.git")
+//                        def license = root . appendNode ("licenses").appendNode("license")
+//                        license.appendNode("name", "The Apache Software License, Version 2.0")
+//                        license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
+//                        license.appendNode("distribution", "repo")
 //
-//                            def license = root . appendNode ("licenses").appendNode("license")
-//                            license.appendNode("name", "The Apache Software License, Version 2.0")
-//                            license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
-//                            license.appendNode("distribution", "repo")
-//
-//                            def developers = root . appendNode ("developers")
-//                            def rkuehne = developers . appendNode ("developer")
-//                            rkuehne.appendNode("id", "rkuehne")
-//                            rkuehne.appendNode("name", "Robert Kühne")
-//                            rkuehne.appendNode("email", "sponiro@gmail.com")
-//                        }
-//            }
+//                        def developers = root . appendNode ("developers")
+//                        def rkuehne = developers . appendNode ("developer")
+//                        rkuehne.appendNode("id", "rkuehne")
+//                        rkuehne.appendNode("name", "Robert Kühne")
+//                        rkuehne.appendNode("email", "sponiro@gmail.com")
+//                    }
 //        }
 //    }
-//
+}
+
 //    afterReleaseBuild.dependsOn bintrayUpload
 //
 //            bintray {

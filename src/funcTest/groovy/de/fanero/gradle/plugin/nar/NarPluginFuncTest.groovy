@@ -1,4 +1,4 @@
-package de.fanero.gradle.plugin.nar
+package org.babeloff.gradle.plugin.nar
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
@@ -28,12 +28,12 @@ class NarPluginFuncTest extends Specification {
         buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
 plugins {
-    id 'de.fanero.gradle.plugin.nar'
+    id 'org.babeloff.gradle.plugin.nar'
 }
 nar {
     baseName '${TEST_BASE_NAME}'
 }
-group = 'de.fanero.test'
+group = 'org.babeloff.test'
 version = '${TEST_VERSION}'
 """
         settingsFile = testProjectDir.newFile('settings.gradle')
@@ -55,7 +55,7 @@ rootProject.name = "nar-test"
 
         then:
         manifest != null
-        manifest.getMainAttributes().getValue('Nar-Group') == 'de.fanero.test'
+        manifest.getMainAttributes().getValue('Nar-Group') == 'org.babeloff.test'
         manifest.getMainAttributes().getValue('Nar-Id') == 'nar-test'
         manifest.getMainAttributes().getValue('Nar-Version') == '1.0'
         manifest.getMainAttributes().getValue('Nar-Dependency-Id') == null
@@ -82,7 +82,7 @@ dependencies {
 
         then:
         manifest != null
-        manifest.getMainAttributes().getValue('Nar-Group') == 'de.fanero.test'
+        manifest.getMainAttributes().getValue('Nar-Group') == 'org.babeloff.test'
         manifest.getMainAttributes().getValue('Nar-Id') == 'nar-test'
         manifest.getMainAttributes().getValue('Nar-Version') == '1.0'
         manifest.getMainAttributes().getValue('Nar-Dependency-Group') == 'org.apache.nifi'

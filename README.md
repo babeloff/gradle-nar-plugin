@@ -14,11 +14,11 @@ buildscript {
         }
     }
     dependencies {
-        classpath (group="de.fanero.gradle.plugin.nar", name="gradle-nar-plugin", version="0.3")
+        classpath (group="org.babeloff.gradle.plugin.nar", name="gradle-nar-plugin", version="0.3")
     }
 }
 
-apply(plugin="de.fanero.gradle.plugin.nar")
+apply(plugin="org.babeloff.gradle.plugin.nar")
 ```
 ## Usage
 
