@@ -45,6 +45,7 @@ class NarPlugin implements Plugin<Project>
     public static final String PROVIDED_RUNTIME_CONFIGURATION_NAME = "nar";
     public static final String NAR_GROUP = BasePlugin.BUILD_GROUP; // could be "nifi"
 
+
     private final ObjectFactory objectFactory;
     private final ImmutableAttributesFactory attributesFactory;
 

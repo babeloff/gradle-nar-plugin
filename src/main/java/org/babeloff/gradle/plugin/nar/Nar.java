@@ -30,9 +30,18 @@ import java.util.concurrent.Callable;
 public class Nar extends Jar {
     public static final String NAR_EXTENSION = "nar";
 
-    private File webXml;
+    private File nifiXml;
     private FileCollection classpath;
-    private final DefaultCopySpec webInf;
+    private final DefaultCopySpec nifiInf;
+
+    private static final String SERVICES_DIRECTORY = "META-INF/services/";
+    private static final String DOCUMENTATION_WRITER_CLASS_NAME = "org.apache.nifi.documentation.xml.XmlDocumentationWriter";
+
+    private static final String[] DEFAULT_EXCLUDES = new String[]{"**/package.html"};
+    private static final String[] DEFAULT_INCLUDES = new String[]{"**/**"};
+
+    private static final String BUILD_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
 
 //    @Internal
 //    public List<Object> bundledDependencies;
@@ -45,18 +54,23 @@ public class Nar extends Jar {
         setMetadataCharset(DefaultManifest.DEFAULT_CONTENT_CHARSET);
         // Add these as separate specs, so they are not affected by the changes to the main spec
 
-        webInf = (DefaultCopySpec) getRootSpec().addChildBeforeSpec(getMainSpec()).into("WEB-INF");
-        webInf.into("classes", spec -> spec.from((Callable<Iterable<File>>) () -> {
+        nifiInf = (DefaultCopySpec) getRootSpec()
+                .addChildBeforeSpec(getMainSpec())
+                .into("WEB-INF");
+        
+        nifiInf.into("classes", spec -> spec.from((Callable<Iterable<File>>) () -> {
             FileCollection classpath = getClasspath();
             return classpath != null ? classpath.filter(File::isDirectory) : Collections.<File>emptyList();
         }));
-        webInf.into("lib", spec -> spec.from((Callable<Iterable<File>>) () -> {
+        
+        nifiInf.into("lib", spec -> spec.from((Callable<Iterable<File>>) () -> {
             FileCollection classpath = getClasspath();
             return classpath != null ? classpath.filter(File::isFile) : Collections.<File>emptyList();
         }));
-        webInf.into("", spec -> {
-            spec.from((Callable<File>) Nar.this::getWebXml);
-            spec.rename(name -> "web.xml");
+        
+        nifiInf.into("", spec -> {
+            spec.from((Callable<File>) Nar.this::getNifiXml);
+            spec.rename(name -> "nifi.xml");
         });
 
         //        bundledDependencies = new ArrayList<>();
@@ -66,8 +80,8 @@ public class Nar extends Jar {
     }
 
     @Internal
-    public CopySpec getWebInf() {
-        return webInf.addChild();
+    public CopySpec getNifiInf() {
+        return nifiInf.addChild();
     }
 
     /**
@@ -81,8 +95,8 @@ public class Nar extends Jar {
      * @param configureClosure The closure to execute
      * @return The newly created {@code CopySpec}.
      */
-    public CopySpec webInf(Closure configureClosure) {
-        return ConfigureUtil.configure(configureClosure, getWebInf());
+    public CopySpec nifiInf(Closure configureClosure) {
+        return ConfigureUtil.configure(configureClosure, getNifiInf());
     }
 
     /**
@@ -94,10 +108,10 @@ public class Nar extends Jar {
      * @return The newly created {@code CopySpec}.
      * @since 3.5
      */
-    public CopySpec webInf(Action<? super CopySpec> configureAction) {
-        CopySpec webInf = getWebInf();
-        configureAction.execute(webInf);
-        return webInf;
+    public CopySpec nifiInf(Action<? super CopySpec> configureAction) {
+        CopySpec nifiInf = getNifiInf();
+        configureAction.execute(nifiInf);
+        return nifiInf;
     }
 
     /**
@@ -144,27 +158,27 @@ public class Nar extends Jar {
     }
 
     /**
-     * Returns the {@code web.xml} file to include in the NAR archive.
-     * When {@code null}, no {@code web.xml} file is included in the NAR.
+     * Returns the {@code nifi.xml} file to include in the NAR archive.
+     * When {@code null}, no {@code nifi.xml} file is included in the NAR.
      *
-     * @return The {@code web.xml} file.
+     * @return The {@code nifi.xml} file.
      */
     @Nullable
     @Optional
     @PathSensitive(PathSensitivity.NONE)
     @InputFile
-    public File getWebXml() {
-        return webXml;
+    public File getNifiXml() {
+        return nifiXml;
     }
 
     /**
-     * Sets the {@code web.xml} file to include in the NAR archive.
-     * When {@code null}, no {@code web.xml} file is included in the NAR.
+     * Sets the {@code nifi.xml} file to include in the NAR archive.
+     * When {@code null}, no {@code nifi.xml} file is included in the NAR.
      *
-     * @param webXml The {@code web.xml} file. Maybe null.
+     * @param nifiXml The {@code nifi.xml} file. Maybe null.
      */
-    public void setWebXml(@Nullable File webXml) {
-        this.webXml = webXml;
+    public void setNifiXml(@Nullable File nifiXml) {
+        this.nifiXml = nifiXml;
     }
 
 

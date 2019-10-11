@@ -1,4 +1,6 @@
 
+import java.text.SimpleDateFormat
+import java.util.Date
 
 // https://github.com/gradle-plugins/toolbox
 
@@ -7,15 +9,7 @@ plugins {
     id ("java-gradle-plugin")
     id ("maven-publish")
     id ("idea")
-}
-
-gradlePlugin {
-    plugins {
-        create("NarPlugin") {
-            id = "nar-plugin"
-            implementationClass = "org.babeloff.gradle.plugin.nar.NarPlugin"
-        }
-    }
+    `build-scan`
 }
 
 group = "org.babeloff.gradle.plugin.nar"
@@ -36,6 +30,11 @@ dependencies {
     testCompile (group="org.spockframework", name="spock-core", version="1.3-groovy-2.5")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 //
 //sourceSets {
 //    integrationTest {
@@ -52,6 +51,7 @@ dependencies {
 //    }
 //}
 //
+
 tasks {
     withType<JavaCompile> {
         //options. = "1.8"
@@ -62,11 +62,22 @@ tasks {
         distributionType = Wrapper.DistributionType.ALL
     }
 
+    named<Jar>("jar") {
+        manifest {
+            attributes["Implementation-Title"] = "Gradle Docker plugin"
+            attributes["Implementation-Version"] = project.version
+            attributes["Built-By"] = System.getProperty("user.name")
+            attributes["Built-Date"] = SimpleDateFormat("MM/dd/yyyy").format(Date())
+            attributes["Built-JDK"] = System.getProperty("java.version")
+            attributes["Built-Gradle"] = gradle.gradleVersion
+        }
+    }
+
     test {
         useJUnitPlatform {
-            includeTags ("fast", "smoke & feature-a")
+            includeTags("fast", "smoke & feature-a")
             // excludeTags "slow", "ci"
-            includeEngines ("junit-jupiter")
+            includeEngines("junit-jupiter")
             // excludeEngines "junit-vintage"
         }
     }
@@ -93,7 +104,7 @@ tasks {
 //        mustRunAfter test
 //    }
 //
-//    functionalTest (type: Test) {
+//    val functionalTest by registering(Test::class) {
 //        description = "Runs the functional tests."
 //        group = "verification"
 //        testClassesDirs = sourceSets.functionalTest.output.classesDirs
@@ -101,16 +112,34 @@ tasks {
 //        mustRunAfter test
 //    }
 //
-//    check.dependsOn functionalTest
+//    check.dependsOn (functionalTest)
 //
-//            gradlePlugin {
-//                testSourceSets sourceSets . functionalTest
-//            }
-//
-//    task sourceJar (type: Jar) {
-//    classifier = "sources"
-//    from sourceSets . main . allJava
-//}
+//    named<Jar>("sourceJar") {
+//        classifier = "sources"
+//        from (sourceSets . main . allJava)
+//    }
+}
+
+
+gradlePlugin {
+    //  testSourceSets (sourceSets . functionalTest)
+    plugins {
+        create("NarPlugin") {
+            id = "nar-plugin"
+            implementationClass = "org.babeloff.gradle.plugin.nar.NarPlugin"
+        }
+    }
+}
+
+buildScan {
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+
+    if (!System.getenv("CI").isNullOrEmpty()) {
+        publishAlways()
+        tag("CI")
+    }
+}
 
 publishing {
 //    publications {
@@ -159,4 +188,4 @@ publishing {
 //                    vcsUrl = "https://github.com/sponiro/gradle-nar-plugin"
 //                }
 //            }
-}
+
