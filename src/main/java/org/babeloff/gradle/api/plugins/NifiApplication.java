@@ -1,4 +1,4 @@
-package org.babeloff.gradle.plugin.nar;
+package org.babeloff.gradle.api.plugins;
 
 
 import org.gradle.api.artifacts.DependencyConstraint;
@@ -25,7 +25,7 @@ public class NifiApplication implements SoftwareComponentInternal {
     public NifiApplication(PublishArtifact warArtifact, String variantName, AttributeContainer attributes) {
         this.warArtifact = warArtifact;
         this.variantName = variantName;
-        this.nifiArchiveUsage = new org.babeloff.gradle.plugin.nar.NifiApplication.NifiArchiveUsageContext(attributes);
+        this.nifiArchiveUsage = new NifiApplication.NifiArchiveUsageContext(attributes);
     }
 
     @Override

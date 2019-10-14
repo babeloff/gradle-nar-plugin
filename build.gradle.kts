@@ -12,7 +12,7 @@ plugins {
     `build-scan`
 }
 
-group = "org.babeloff.gradle.plugin.nar"
+group = "org.babeloff"
 version = "2019.10.0"
 
 repositories {
@@ -125,8 +125,8 @@ gradlePlugin {
     //  testSourceSets (sourceSets . functionalTest)
     plugins {
         create("NarPlugin") {
-            id = "nar-plugin"
-            implementationClass = "org.babeloff.gradle.plugin.nar.NarPlugin"
+            id = "org.babeloff.nar-plugin"
+            implementationClass = "org.babeloff.gradle.api.plugins.NarPlugin"
         }
     }
 }
@@ -152,13 +152,13 @@ publishing {
 //                        Node root = asNode ()
 //                        root.appendNode("name", "Gradle Nar Plugin")
 //                        root.appendNode("description", "Gradle plugin to support development of Apache NiFi nar archives")
-//                        root.appendNode("url", "https://github.com/sponiro/nar-gradle-plugin")
+//                        root.appendNode("url", "https://github.com/babeloff/nar-gradle-plugin")
 //                        root.appendNode("inceptionYear", "2015")
 //
 //                        def scm = root . appendNode ("scm")
-//                        scm.appendNode("url", "https://github.com/sponiro/nar-gradle-plugin")
-//                        scm.appendNode("connection", "scm:https://github.com/sponiro/nar-gradle-plugin.git")
-//                        scm.appendNode("developerConnection", "scm:git:https://github.com/sponiro/nar-gradle-plugin.git")
+//                        scm.appendNode("url", "https://github.com/babeloff/nar-gradle-plugin")
+//                        scm.appendNode("connection", "scm:https://github.com/babeloff/nar-gradle-plugin.git")
+//                        scm.appendNode("developerConnection", "scm:git:https://github.com/babeloff/nar-gradle-plugin.git")
 //
 //                        def license = root . appendNode ("licenses").appendNode("license")
 //                        license.appendNode("name", "The Apache Software License, Version 2.0")
@@ -169,7 +169,7 @@ publishing {
 //                        def rkuehne = developers . appendNode ("developer")
 //                        rkuehne.appendNode("id", "rkuehne")
 //                        rkuehne.appendNode("name", "Robert Kühne")
-//                        rkuehne.appendNode("email", "sponiro@gmail.com")
+//                        rkuehne.appendNode("email", "phreed@gmail.com")
 //                    }
 //        }
 //    }
@@ -185,7 +185,7 @@ publishing {
 //                    repo = "gradle-plugins"
 //                    name = "nar-gradle-plugin"
 //                    licenses = ["Apache-2.0"]
-//                    vcsUrl = "https://github.com/sponiro/nar-gradle-plugin"
+//                    vcsUrl = "https://github.com/babeloff/nar-gradle-plugin"
 //                }
 //            }
 

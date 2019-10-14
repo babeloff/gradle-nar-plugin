@@ -14,11 +14,11 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url = uri("http://dl.bintray.com/sponiro/gradle-plugins")
+            url = uri("http://dl.bintray.com/babeloff/gradle-plugins")
         }
     }
     dependencies {
-        classpath (group="org.babeloff.gradle.plugin.nar", name="nar-gradle-plugin", version="0.3")
+        classpath (group="org.babeloff.gradle.plugin.nar", name="nar-gradle-plugin", version="2019.10.0")
     }
 }
 
@@ -89,8 +89,12 @@ A full description can be found at https://docs.gradle.org/current/userguide/jav
 
 ## Shortcomings
 
-Version 0.1 and 0.2 do not add the parent nar in the nar configuration to the dependencies.
-To fix this you can either use version 0.3 or add the following code to your build:
+The goal is to be feature compatible with the reference implementation nifi-nar-maven-plugin.
+
+* https://github.com/apache/nifi-maven
+* https://cwiki.apache.org/confluence/display/NIFI/Maven+Projects+for+Extensions
+* https://issues.apache.org/jira/projects/NIFI
+* https://gitbox.apache.org/repos/asf?p=nifi-maven.git
 
 ```kotlin
 configurations {
@@ -101,7 +105,8 @@ configurations {
 
 ### Service Locator
 
-Apache nifi uses the [ServiceLocator](http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html) to define processors. The [Processor API](https://nifi.apache.org/docs/nifi-docs/html/developer-guide.html#processor_api)
+Apache nifi uses the [ServiceLocator](http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html) to define processors. 
+The [Processor API](https://nifi.apache.org/docs/nifi-docs/html/developer-guide.html#processor_api)
 explains in detail how this works. Basically, you have to add a file in `META-INF/services` directory named
 `org.apache.nifi.processor.Processor`. This text file contains a fully-qualified class names of your processors.
 One per line.

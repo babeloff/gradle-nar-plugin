@@ -1,8 +1,9 @@
-package org.babeloff.gradle.plugin.nar;
+package org.babeloff.gradle.api.tasks.bundlings;
 
 
 import groovy.lang.Closure;
 import org.gradle.api.Action;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.copy.DefaultCopySpec;
@@ -20,6 +21,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -43,11 +45,11 @@ public class Nar extends Jar {
     private static final String BUILD_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
 
-//    @Internal
-//    public List<Object> bundledDependencies;
-//
-//    @Internal
-//    Configuration parentNarConfiguration;
+    @Internal
+    public List<Object> bundledDependencies;
+
+    @Internal
+    Configuration parentNarConfiguration;
 
     public Nar() {
         getArchiveExtension().set(NAR_EXTENSION);
@@ -73,7 +75,7 @@ public class Nar extends Jar {
             spec.rename(name -> "nifi.xml");
         });
 
-        //        bundledDependencies = new ArrayList<>();
+        bundledDependencies = new ArrayList<>();
 //        configureBundledDependencies();
 //        configureManifest();
 //        configureParentNarManifestEntry();

@@ -1,9 +1,11 @@
-package org.babeloff.gradle.plugin.nar;
+package org.babeloff.gradle.api.plugins;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.babeloff.gradle.api.tasks.bundlings.Nar;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.PublishArtifact;
@@ -22,6 +24,8 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
@@ -32,6 +36,8 @@ import java.util.concurrent.Callable;
  *
  * https://docs.gradle.org/current/userguide/custom_plugins.html
  * https://guides.gradle.org/designing-gradle-plugins/
+ * https://github.com/gradle/gradle/blob/master/subprojects/plugins/src/main/java/org/gradle/api/plugins/WarPlugin.java
+ *
  *
  * @author Fred Eisele
  */
@@ -39,10 +45,10 @@ class NarPlugin implements Plugin<Project>
 {
     private static final Logger logger = LogManager.getLogger(NarPlugin.class);
 
-    public static final String NAR_PLUGIN_NAME = "nar";
-    public static final String NAR_TASK_NAME = "nar";
-    public static final String PROVIDED_COMPILE_CONFIGURATION_NAME = "nar";
-    public static final String PROVIDED_RUNTIME_CONFIGURATION_NAME = "nar";
+    public static final String NAR_PLUGIN_NAME = "org.babeloff.nar-plugin";
+    public static final String NAR_TASK_NAME = "narPlugin";
+    public static final String NAR_IMPLEMENTATION_CONFIGURATION_NAME = "narImplementation";
+    public static final String NAR_RUNTIME_ELEMENTS_CONFIGURATION_NAME = "narRuntimeElements";
     public static final String NAR_GROUP = BasePlugin.BUILD_GROUP; // could be "nifi"
 
 
@@ -61,7 +67,9 @@ class NarPlugin implements Plugin<Project>
         logger.trace("apply: entry");
         project.getPluginManager().apply(JavaPlugin.class);
         final NarPluginConvention pluginConvention = new DefaultNarPluginConvention(project);
-        project.getConvention().getPlugins().put(NAR_PLUGIN_NAME, pluginConvention);
+        project.getConvention()
+                .getPlugins()
+                .put(NAR_PLUGIN_NAME, pluginConvention);
 
         final TaskContainer tasks = project.getTasks();
         tasks.withType(Nar.class).configureEach(task ->
@@ -88,7 +96,7 @@ class NarPlugin implements Plugin<Project>
                 final Configuration providedRuntime =
                         project
                         .getConfigurations()
-                        .getByName(PROVIDED_RUNTIME_CONFIGURATION_NAME);
+                        .getByName(NAR_RUNTIME_ELEMENTS_CONFIGURATION_NAME);
 
                 return runtimeClasspath.minus(providedRuntime);
             });
@@ -96,8 +104,22 @@ class NarPlugin implements Plugin<Project>
 
         final TaskProvider<Nar> nar = tasks.register(NAR_TASK_NAME, Nar.class, (nar1) ->
         {
-            nar1.setDescription("Generates a nar archive with all the compiled classes, the web-app content and the libraries.");
+            nar1.setDescription("Generates a nar archive with all the compiled classes, per http://nifi.apache.org/docs/nifi-docs/html/developer-guide.html#nars..");
             nar1.setGroup(NAR_GROUP);
+
+//            nar1.getInputs().files(conf);
+//
+            logger.info("configure bundled dependencies");
+            nar1.bundledDependencies = Arrays.asList(
+                    project.getConfigurations().getAt("runtime"),
+                    project.getTasksByName(JavaPlugin.JAR_TASK_NAME, true));
+//
+//            logger.info("configure parent nar manifest entry");
+//            nar1.parentNarConfiguration = conf;
+
+            final Set<Task> narTasks = project.getTasksByName(BasePlugin.ASSEMBLE_TASK_NAME, true);
+            narTasks.forEach( (k) -> k.dependsOn(nar1) );
+
         });
 
         PublishArtifact narArtifact = new LazyPublishArtifact(nar);
@@ -109,23 +131,29 @@ class NarPlugin implements Plugin<Project>
         logger.trace("apply: exit");
     }
 
+    /**
+     *
+     * @param configurationContainer
+     */
     public void configureConfigurations(final ConfigurationContainer configurationContainer) {
-        final Configuration provideCompileConfiguration = configurationContainer
-                .create(PROVIDED_COMPILE_CONFIGURATION_NAME).setVisible(false)
+        final Configuration narCompileConfiguration = configurationContainer
+                .create(NAR_IMPLEMENTATION_CONFIGURATION_NAME)
+                .setVisible(false)
                 .setDescription("Additional compile classpath for libraries that should not be part of the NAR archive.");
 
         configurationContainer
                 .getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME)
-                .extendsFrom(provideCompileConfiguration);
+                .extendsFrom(narCompileConfiguration);
 
-        final Configuration provideRuntimeConfiguration = configurationContainer
-                .create(PROVIDED_RUNTIME_CONFIGURATION_NAME).setVisible(false)
-                .extendsFrom(provideCompileConfiguration)
+        final Configuration narRuntimeConfiguration = configurationContainer
+                .create(NAR_RUNTIME_ELEMENTS_CONFIGURATION_NAME)
+                .setVisible(false)
+                .extendsFrom(narCompileConfiguration)
                 .setDescription("Additional runtime classpath for libraries that should not be part of the NAR archive.");
 
         configurationContainer
                 .getByName(JavaPlugin.RUNTIME_ELEMENTS_CONFIGURATION_NAME)
-                .extendsFrom(provideRuntimeConfiguration);
+                .extendsFrom(narRuntimeConfiguration);
     }
 
     private void configureComponent(final Project project, final PublishArtifact narArtifact) {
@@ -136,34 +164,6 @@ class NarPlugin implements Plugin<Project>
         project.getComponents()
                 .add(objectFactory.newInstance(NifiApplication.class, narArtifact, "master", attributes));
     }
-
-//
-//    private Configuration createNarConfiguration(Project project) {
-//        final ConfigurationContainer configs = project.getConfigurations();
-//        Configuration narConfiguration = configs.create(NAR_CONFIGURATION);
-//        configs.getAt("compileOnly").extendsFrom(narConfiguration);
-//        narConfiguration.setTransitive(false);
-//        return narConfiguration;
-//    }
-//
-//    private void createNarTask(Project project, Configuration conf) {
-//        final TaskContainer tasks = project.getTasks();
-//        final Nar nar = tasks.create(NAR_TASK_NAME, Nar.class);
-//        nar.setDescription("Assembles a NiFi archive per http://nifi.apache.org/docs/nifi-docs/html/developer-guide.html#nars.");
-//        nar.setGroup(BasePlugin.BUILD_GROUP);
-//        nar.getInputs().files(conf);
-//
-//        logger.info("configure bundled dependencies");
-//        nar.bundledDependencies = Arrays.asList(
-//                project.getConfigurations().getAt("runtime"),
-//                project.getTasksByName(JavaPlugin.JAR_TASK_NAME, true));
-//
-//        logger.info("configure parent nar manifest entry");
-//        nar.parentNarConfiguration = conf;
-//
-//        final Set<Task> narTasks = project.getTasksByName(BasePlugin.ASSEMBLE_TASK_NAME, true);
-//        narTasks.forEach( (k) -> k.dependsOn(nar) );
-//    }
 
 }
 

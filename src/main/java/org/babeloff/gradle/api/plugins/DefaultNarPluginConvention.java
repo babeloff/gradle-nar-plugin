@@ -1,4 +1,4 @@
-package org.babeloff.gradle.plugin.nar;
+package org.babeloff.gradle.api.plugins;
 
 import org.gradle.api.Project;
 import org.gradle.api.reflect.HasPublicType;
@@ -19,7 +19,7 @@ public class DefaultNarPluginConvention extends NarPluginConvention implements H
 
     @Override
     public TypeOf<?> getPublicType() {
-        return typeOf(NarPluginConvention.class);
+        return TypeOf.typeOf(NarPluginConvention.class);
     }
 
     @Override
