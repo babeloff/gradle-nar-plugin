@@ -152,13 +152,13 @@ publishing {
 //                        Node root = asNode ()
 //                        root.appendNode("name", "Gradle Nar Plugin")
 //                        root.appendNode("description", "Gradle plugin to support development of Apache NiFi nar archives")
-//                        root.appendNode("url", "https://github.com/sponiro/gradle-nar-plugin")
+//                        root.appendNode("url", "https://github.com/sponiro/nar-gradle-plugin")
 //                        root.appendNode("inceptionYear", "2015")
 //
 //                        def scm = root . appendNode ("scm")
-//                        scm.appendNode("url", "https://github.com/sponiro/gradle-nar-plugin")
-//                        scm.appendNode("connection", "scm:https://github.com/sponiro/gradle-nar-plugin.git")
-//                        scm.appendNode("developerConnection", "scm:git:https://github.com/sponiro/gradle-nar-plugin.git")
+//                        scm.appendNode("url", "https://github.com/sponiro/nar-gradle-plugin")
+//                        scm.appendNode("connection", "scm:https://github.com/sponiro/nar-gradle-plugin.git")
+//                        scm.appendNode("developerConnection", "scm:git:https://github.com/sponiro/nar-gradle-plugin.git")
 //
 //                        def license = root . appendNode ("licenses").appendNode("license")
 //                        license.appendNode("name", "The Apache Software License, Version 2.0")
@@ -183,9 +183,9 @@ publishing {
 //                publications = ["mavenJava"]
 //                pkg {
 //                    repo = "gradle-plugins"
-//                    name = "gradle-nar-plugin"
+//                    name = "nar-gradle-plugin"
 //                    licenses = ["Apache-2.0"]
-//                    vcsUrl = "https://github.com/sponiro/gradle-nar-plugin"
+//                    vcsUrl = "https://github.com/sponiro/nar-gradle-plugin"
 //                }
 //            }
 

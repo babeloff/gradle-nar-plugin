@@ -1,4 +1,4 @@
-# gradle-nar-plugin
+# nar-gradle-plugin
 
 A gradle plugin to create nar files for [Apache nifi](http://nifi.apache.org).
 
@@ -14,7 +14,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath (group="org.babeloff.gradle.plugin.nar", name="gradle-nar-plugin", version="0.3")
+        classpath (group="org.babeloff.gradle.plugin.nar", name="nar-gradle-plugin", version="0.3")
     }
 }
 

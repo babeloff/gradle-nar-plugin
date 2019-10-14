@@ -16,4 +16,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "gradle-nar-plugin"
+rootProject.name = "nar-gradle-plugin"
