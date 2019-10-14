@@ -2,6 +2,10 @@
 
 A gradle plugin to create nar files for [Apache nifi](http://nifi.apache.org).
 
+Originally this was based on gradle-nar-plugin but it has substantially deviated from that source.
+THIS IS NOT READY FOR USE BY ANYBODY!
+
+
 ## Installation
 To use the plugin, add the bintray repository to your script and add the plugin dependency:
 
