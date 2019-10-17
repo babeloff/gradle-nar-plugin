@@ -18,12 +18,12 @@ import java.util.Set;
 
 public class NifiApplication implements SoftwareComponentInternal {
     private final UsageContext nifiArchiveUsage;
-    private final PublishArtifact warArtifact;
+    private final PublishArtifact narArtifact;
     private final String variantName;
 
     @Inject
-    public NifiApplication(PublishArtifact warArtifact, String variantName, AttributeContainer attributes) {
-        this.warArtifact = warArtifact;
+    public NifiApplication(PublishArtifact narArtifact, String variantName, AttributeContainer attributes) {
+        this.narArtifact = narArtifact;
         this.variantName = variantName;
         this.nifiArchiveUsage = new NifiApplication.NifiArchiveUsageContext(attributes);
     }
@@ -40,7 +40,7 @@ public class NifiApplication implements SoftwareComponentInternal {
 
     private class NifiArchiveUsageContext extends AbstractUsageContext {
         public NifiArchiveUsageContext(AttributeContainer attributes) {
-            super(((AttributeContainerInternal)attributes).asImmutable(), Collections.singleton(warArtifact));
+            super(((AttributeContainerInternal)attributes).asImmutable(), Collections.singleton(narArtifact));
         }
 
         @Override

@@ -1,6 +1,6 @@
 package org.babeloff.gradle.plugin.nar
 
-import org.babeloff.gradle.api.tasks.bundlings.Nar
+import org.babeloff.gradle.api.tasks.bundlings.NarTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin
@@ -46,7 +46,7 @@ class NarPluginTest extends Specification {
         project.apply plugin: PLUGIN
 
         then:
-        Nar nar = project.tasks[NAR_TASK]
+        NarTask nar = project.tasks[NAR_TASK]
         nar.extension == NAR_TASK
     }
 
@@ -65,7 +65,7 @@ class NarPluginTest extends Specification {
         project.apply plugin: PLUGIN
 
         then:
-        Nar nar = project.tasks[NAR_TASK]
+        NarTask nar = project.tasks[NAR_TASK]
         !nar.manifest.attributes.containsKey('Nar-Dependency-Id')
     }
 }

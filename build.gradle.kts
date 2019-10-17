@@ -7,7 +7,7 @@ import java.util.Date
 plugins {
     id ("java")
     id ("java-gradle-plugin")
-    id ("maven-publish")
+    id("com.gradle.plugin-publish") version "0.10.1"
     id ("idea")
     `build-scan`
 }
@@ -28,6 +28,23 @@ dependencies {
     testImplementation(group="org.junit.jupiter", name="junit-jupiter-api", version="5.5.2")
     testRuntimeOnly(group="org.junit.jupiter", name="junit-jupiter-engine", version="5.5.2")
     testCompile (group="org.spockframework", name="spock-core", version="1.3-groovy-2.5")
+
+
+    //implementation (group="org.apache.nifi", name="nifi-properties", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-nar-utils", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-api", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-mock", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-processor-utils", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-framework-api", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-record", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-standard-utils", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-framework-nar-utils", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-framework-nar", version="1.9.2")
+//    implementation (group="org.apache.nifi", name="nifi-ui-extension", version="1.9.2")
+
+    implementation (group="org.codehaus.plexus", name="plexus-archiver", version="4.1.0")
+    implementation (group="org.codehaus.plexus", name="plexus-utils", version="3.3.0")
+
 }
 
 java {
@@ -120,6 +137,23 @@ tasks {
 //    }
 }
 
+/**
+ * You will need an API Key.
+ *  * https://plugins.gradle.org/user/register
+ */
+pluginBundle {
+    website = "https://github.com/babeloff/nar-gradle-plugin"
+    vcsUrl = "https://github.com/babeloff/nar-gradle-plugin"
+    description = "Nifi Archive (NAR) generator."
+    tags = listOf("nifi", "archive", "nar", "pulsar")
+
+    plugins {
+        create("NarPlugin") {
+            displayName = "Gradle Nifi Archive (NAR) plugin"
+        }
+    }
+}
+
 
 gradlePlugin {
     //  testSourceSets (sourceSets . functionalTest)
@@ -127,6 +161,8 @@ gradlePlugin {
         create("NarPlugin") {
             id = "org.babeloff.nar-plugin"
             implementationClass = "org.babeloff.gradle.api.plugins.NarPlugin"
+            displayName = "NAR"
+            description = "Generate Nifi Archive (NAR)"
         }
     }
 }
@@ -140,52 +176,3 @@ buildScan {
         tag("CI")
     }
 }
-
-publishing {
-//    publications {
-//        mavenJava(MavenPublication) {
-//            from components . java
-//
-//                    artifact sourceJar
-//
-//                    pom.withXml {
-//                        Node root = asNode ()
-//                        root.appendNode("name", "Gradle Nar Plugin")
-//                        root.appendNode("description", "Gradle plugin to support development of Apache NiFi nar archives")
-//                        root.appendNode("url", "https://github.com/babeloff/nar-gradle-plugin")
-//                        root.appendNode("inceptionYear", "2015")
-//
-//                        def scm = root . appendNode ("scm")
-//                        scm.appendNode("url", "https://github.com/babeloff/nar-gradle-plugin")
-//                        scm.appendNode("connection", "scm:https://github.com/babeloff/nar-gradle-plugin.git")
-//                        scm.appendNode("developerConnection", "scm:git:https://github.com/babeloff/nar-gradle-plugin.git")
-//
-//                        def license = root . appendNode ("licenses").appendNode("license")
-//                        license.appendNode("name", "The Apache Software License, Version 2.0")
-//                        license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
-//                        license.appendNode("distribution", "repo")
-//
-//                        def developers = root . appendNode ("developers")
-//                        def rkuehne = developers . appendNode ("developer")
-//                        rkuehne.appendNode("id", "rkuehne")
-//                        rkuehne.appendNode("name", "Robert Kühne")
-//                        rkuehne.appendNode("email", "phreed@gmail.com")
-//                    }
-//        }
-//    }
-}
-
-//    afterReleaseBuild.dependsOn bintrayUpload
-//
-//            bintray {
-//                user = project.hasProperty("bintrayUser") ? project.getProperty("bintrayUser") : null
-//                key = project.hasProperty("bintrayKey") ? project.getProperty("bintrayKey") : null
-//                publications = ["mavenJava"]
-//                pkg {
-//                    repo = "gradle-plugins"
-//                    name = "nar-gradle-plugin"
-//                    licenses = ["Apache-2.0"]
-//                    vcsUrl = "https://github.com/babeloff/nar-gradle-plugin"
-//                }
-//            }
-
