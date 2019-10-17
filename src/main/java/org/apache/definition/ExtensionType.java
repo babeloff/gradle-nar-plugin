@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gradle.internal.impldep.org.apache.nifi.extension.definition;
+package org.apache.definition;
 
-public interface ServiceAPIDefinition {
-    String getServiceAPIClassName();
+public enum ExtensionType {
 
-    String getServiceGroupId();
+   PROCESSOR,
 
-    String getServiceArtifactId();
+   CONTROLLER_SERVICE,
 
-    String getServiceVersion();
+   REPORTING_TASK;
+
 }

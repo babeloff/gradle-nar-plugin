@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gradle.internal.impldep.org.apache.nifi.extension.definition.extraction;
+package org.apache.definition.extraction;
 
-import org.gradle.internal.impldep.org.apache.nifi.extension.definition.ServiceAPIDefinition;
+import org.apache.definition.ServiceAPIDefinition;
 
 public class StandardServiceAPIDefinition implements ServiceAPIDefinition {
     private final String serviceAPIClassName;

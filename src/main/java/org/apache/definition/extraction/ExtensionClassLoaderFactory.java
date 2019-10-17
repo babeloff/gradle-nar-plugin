@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gradle.internal.impldep.org.apache.nifi.extension.definition.extraction;
-
+package org.apache.definition.extraction;
 
 import org.gradle.internal.impldep.org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.gradle.internal.impldep.org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;

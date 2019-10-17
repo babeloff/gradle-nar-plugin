@@ -14,26 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gradle.internal.impldep.org.apache.nifi.extension.definition;
+package org.apache.definition;
 
-import java.util.Set;
+public interface ServiceAPIDefinition {
+    String getServiceAPIClassName();
 
-public interface ExtensionDefinition {
+    String getServiceGroupId();
 
-    /**
-     * @return the type of Extension
-     */
-    ExtensionType getExtensionType();
+    String getServiceArtifactId();
 
-    /**
-     * @return the Set of all Services API's that this extension provides. Note that this will be an empty set for
-     * any Extension for which {@link #getExtensionType()} is not {@link ExtensionType#CONTROLLER_SERVICE}.
-     */
-    Set<ServiceAPIDefinition> getProvidedServiceAPIs();
-
-    /**
-     * @return the name of the Extension
-     */
-    String getExtensionName();
-
+    String getServiceVersion();
 }

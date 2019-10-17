@@ -9,6 +9,7 @@ plugins {
     id ("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
     id ("idea")
+    `maven-publish`
     `build-scan`
 }
 
@@ -31,7 +32,7 @@ dependencies {
 
 
     //implementation (group="org.apache.nifi", name="nifi-properties", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-nar-utils", version="1.9.2")
+    implementation (group="org.apache.nifi", name="nifi-nar-utils", version="1.9.2")
 //    implementation (group="org.apache.nifi", name="nifi-api", version="1.9.2")
 //    implementation (group="org.apache.nifi", name="nifi-mock", version="1.9.2")
 //    implementation (group="org.apache.nifi", name="nifi-processor-utils", version="1.9.2")

@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gradle.internal.impldep.org.apache.nifi.extension.definition.extraction;
+package org.apache.definition.extraction;
 
-import org.gradle.internal.impldep.org.apache.nifi.extension.definition.ExtensionDefinition;
-import org.gradle.internal.impldep.org.apache.nifi.extension.definition.ExtensionType;
-import org.gradle.internal.impldep.org.apache.nifi.extension.definition.ServiceAPIDefinition;
+import org.apache.definition.ExtensionDefinition;
+import org.apache.definition.ExtensionType;
+import org.apache.definition.ServiceAPIDefinition;
 
 import java.util.Set;
 
