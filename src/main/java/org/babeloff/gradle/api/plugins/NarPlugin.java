@@ -111,14 +111,13 @@ class NarPlugin implements Plugin<Project>
             narTask1.setGroup(NAR_GROUP);
 
             //narTask1.getInputs().files(conf);
-            narTask1.projectBuildDirectory.convention(pluginConvention.getProjectBuildDirectory());
-            narTask1.failOnMissingClassifierArtifact.convention(pluginConvention.getFailOnMissingClassifierArtifact());
-            narTask1.niFiApiVersion.convention("1.0");
+            narTask1.setProjectBuildDirectory(pluginConvention.getProjectBuildDirectory());
+            narTask1.setFailOnMissingClassifierArtifact(pluginConvention.getFailOnMissingClassifierArtifact());
 
             logger.info("configure bundled dependencies");
-            narTask1.bundledDependencies = Arrays.asList(
-                    project.getConfigurations().getAt("runtime"),
-                    project.getTasksByName(JavaPlugin.JAR_TASK_NAME, true));
+//            narTask1.bundledDependencies = Arrays.asList(
+//                    project.getConfigurations().getAt("runtime"),
+//                    project.getTasksByName(JavaPlugin.JAR_TASK_NAME, true));
 //
 //            logger.info("configure parent nar manifest entry");
 //            nar1.parentNarConfiguration = conf;

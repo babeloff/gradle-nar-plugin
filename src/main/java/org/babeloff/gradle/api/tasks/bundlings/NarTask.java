@@ -4,6 +4,22 @@ package org.babeloff.gradle.api.tasks.bundlings;
 import groovy.lang.Closure;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.DependencyStatusSets;
+import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.DependencyUtil;
+import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.filters.DestFileFilter;
+import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.resolvers.ArtifactsResolver;
+import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
+import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.translators.ArtifactTranslator;
+import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.translators.ClassifierTypeTranslator;
+import org.gradle.internal.impldep.org.apache.maven.shared.artifact.filter.collection.*;
+import org.gradle.internal.impldep.org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
+import org.gradle.internal.impldep.org.apache.nifi.extension.definition.ExtensionDefinition;
+import org.gradle.internal.impldep.org.apache.nifi.extension.definition.ExtensionType;
+import org.gradle.internal.impldep.org.apache.nifi.extension.definition.ServiceAPIDefinition;
+import org.gradle.internal.impldep.org.apache.nifi.extension.definition.extraction.ExtensionClassLoader;
+import org.gradle.internal.impldep.org.apache.nifi.extension.definition.extraction.ExtensionClassLoaderFactory;
+import org.gradle.internal.impldep.org.apache.nifi.extension.definition.extraction.ExtensionDefinitionFactory;
+import org.gradle.internal.impldep.org.apache.nifi.extension.definition.extraction.StandardServiceAPIDefinition;
 import org.babeloff.gradle.api.conventions.MavenArchiveConfiguration;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
@@ -16,16 +32,13 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.ArtifactRepositoryContainer;
 import org.gradle.api.artifacts.dsl.ArtifactHandler;
 import org.gradle.api.file.*;
-import org.gradle.api.internal.artifacts.ivyservice.resolveengine.graph.builder.DependencyGraphBuilder;
 import org.gradle.api.internal.file.copy.DefaultCopySpec;
-import org.gradle.api.java.archives.ManifestException;
 import org.gradle.api.java.archives.internal.DefaultManifest;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 import org.gradle.api.tasks.Optional;
 import org.gradle.internal.impldep.org.apache.maven.artifact.Artifact;
-import org.gradle.internal.impldep.org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.gradle.internal.impldep.org.apache.maven.artifact.factory.ArtifactFactory;
 import org.gradle.internal.impldep.org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.gradle.internal.impldep.org.apache.maven.artifact.installer.ArtifactInstaller;
@@ -34,6 +47,7 @@ import org.gradle.internal.impldep.org.apache.maven.artifact.resolver.ArtifactCo
 import org.gradle.internal.impldep.org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.gradle.internal.impldep.org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.gradle.internal.impldep.org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.gradle.internal.impldep.org.apache.maven.plugin.logging.Log;
 import org.gradle.internal.impldep.org.apache.maven.project.MavenProjectHelper;
 import org.gradle.internal.impldep.org.apache.maven.project.ProjectBuilder;
 import org.gradle.internal.impldep.org.apache.maven.repository.legacy.metadata.ArtifactMetadataSource;
@@ -102,6 +116,7 @@ public class NarTask extends Jar {
     public Property<Boolean> getFailOnMissingClassifierArtifact() {
         return this.failOnMissingClassifierArtifact;
     }
+    public void setFailOnMissingClassifierArtifact(Boolean value) { this.failOnMissingClassifierArtifact.convention(value); }
     private Property<Boolean> failOnMissingClassifierArtifact = getProject().getObjects().property(Boolean.class);
     @Input
     public Property<Boolean> getOverWriteReleases() {
@@ -136,7 +151,7 @@ public class NarTask extends Jar {
 
     // STRING Inputs
     @Input
-    public Property<String> classifier() { return this.classifier;  }
+    public Property<String> getArchiveClassifier() { return this.classifier;  }
     private Property<String> classifier = getProject().getObjects().property(String.class);
     @Input
     public Property<String> getIncludeTypes() {
@@ -267,7 +282,8 @@ public class NarTask extends Jar {
     public RegularFileProperty defaultManifestFiles = getProject().getObjects().fileProperty();
     @OutputDirectory
     public DirectoryProperty getProjectBuildDirectory() { return this.projectBuildDirectory; }
-    public DirectoryProperty projectBuildDirectory = getProject().getObjects().directoryProperty();
+    public void setProjectBuildDirectory(Directory value) { this.projectBuildDirectory.convention(value); }
+    private DirectoryProperty projectBuildDirectory = getProject().getObjects().directoryProperty();
     @OutputDirectory
     public DirectoryProperty getMarkersDirectory() { return this.markersDirectory; }
     public DirectoryProperty markersDirectory = getProject().getObjects().directoryProperty();
@@ -353,9 +369,7 @@ public class NarTask extends Jar {
     }
     public Property<ArtifactHandlerManager> artifactHandlerManager = getProject().getObjects().property(ArtifactHandlerManager.class);
     @Input
-    public Property<DependencyGraphBuilder> getDependencyGraphBuilder() {
-        return this.dependencyGraphBuilder;
-    }
+    public Property<DependencyGraphBuilder> getDependencyGraphBuilder() { return this.dependencyGraphBuilder; }
     public Property<DependencyGraphBuilder> dependencyGraphBuilder = getProject().getObjects().property(DependencyGraphBuilder.class);
     @Input
     public Property<ProjectBuilder> getProjectBuilder() { return this.projectBuilder; }
@@ -685,7 +699,7 @@ public class NarTask extends Jar {
         final Method initMethod = docWriterClass.getMethod("initialize", configurableComponentClass);
         initMethod.invoke(docWriter, extensionInstance);
 
-        final Map<String,ServiceAPIDefinition> propertyServiceDefinitions = getRequiredServiceDefinitions(extensionClass, extensionInstance);
+        final Map<String, ServiceAPIDefinition> propertyServiceDefinitions = getRequiredServiceDefinitions(extensionClass, extensionInstance);
         final Set<ServiceAPIDefinition> providedServiceDefinitions = extensionDefinition.getProvidedServiceAPIs();
 
         if ((providedServiceDefinitions == null || providedServiceDefinitions.isEmpty())
@@ -838,13 +852,15 @@ public class NarTask extends Jar {
 
     private ExtensionClassLoaderFactory createClassLoaderFactory() {
         return new ExtensionClassLoaderFactory.Builder()
-                .artifactResolver(this.getResolver())
+                .artifactResolver(this.getResolver().get())
                 .dependencyGraphBuilder(this.getDependencyGraphBuilder().get())
-                .localRepository(this.getRepositories().get())
-                .log(logger)
-                .project(getProject())
-                .projectBuilder(this.getProjectBuilder())
-                .artifactHandlerManager(this.artifactHandlerManager)
+                // TODO convert to maven repository container objects.
+                //.localRepository(this.getRepositories().get())
+                .log(getLog())
+                // TODO Wants maven project
+                //.project(getProject())
+                .projectBuilder(this.getProjectBuilder().get())
+                .artifactHandlerManager(this.getArtifactHandlerManager().get())
                 .build();
     }
 
@@ -888,7 +904,9 @@ public class NarTask extends Jar {
         // Resolve the pom artifact using repos
         try {
             this.getRepositories().get();
-            this.getResolver().get().resolve(pomArtifact, this.getRepositories().get());
+            // FIXME: I do not have the maven repositories.
+            // this.getResolver().get().resolve(pomArtifact, this.getRepositories().get(), this.localRepo);
+            this.getResolver().get().resolve(pomArtifact, null, null);
         } catch (ArtifactResolutionException | ArtifactNotFoundException e) {
             logger.info(e.getMessage());
         }
@@ -896,7 +914,11 @@ public class NarTask extends Jar {
     }
 
     protected ArtifactsFilter getMarkedArtifactFilter() {
-        return new DestFileFilter(this.overWriteReleases, this.overWriteSnapshots, this.overWriteIfNewer, false, false, false, false, false, getDependenciesDirectory());
+        return new DestFileFilter(
+                this.getOverWriteReleases().get(),
+                this.getOverWriteSnapshots().get(),
+                this.getOverWriteIfNewer().get(),
+                false, false, false, false, false, getDependenciesDirectory());
     }
 
 
@@ -905,17 +927,19 @@ public class NarTask extends Jar {
         FilterArtifacts filter = new FilterArtifacts();
 
         filter.addFilter(new ProjectTransitivityFilter(getProject().getDependencies(), false));
-        filter.addFilter(new ScopeFilter(this.getIncludeScope(), this.getExcludeScope()));
-        filter.addFilter(new TypeFilter(this.includeTypes, this.excludeTypes));
-        filter.addFilter(new ClassifierFilter(this.includeClassifiers, this.excludeClassifiers));
-        filter.addFilter(new GroupIdFilter(this.includeGroupIds, this.excludeGroupIds));
-        filter.addFilter(new ArtifactIdFilter(this.includeArtifactIds, this.excludeArtifactIds));
+        filter.addFilter(new ScopeFilter(this.getIncludeScope().get(), this.getExcludeScope().get()));
+        filter.addFilter(new TypeFilter(this.getIncludeTypes().get(), this.getExcludeTypes().get()));
+        filter.addFilter(new ClassifierFilter(this.getIncludeClassifiers().get(), this.getExcludeClassifiers().get()));
+        filter.addFilter(new GroupIdFilter(this.getIncludeGroupIds().get(), this.getExcludeGroupIds().get()));
+        filter.addFilter(new ArtifactIdFilter(this.getIncludeArtifactIds().get(), this.getExcludeArtifactIds().get()));
 
         // explicitly filter our nar dependencies
         filter.addFilter(new TypeFilter("", "nar"));
 
         // start with all artifacts.
-        ArtifactHandler artifacts = getProject().getArtifacts();
+        ArtifactHandler artifactHandler = getProject().getArtifacts();
+        // TODO How to get a set of artifacts from gradle?
+        Set<Artifact> artifacts = null; //  artifactHandler;
 
         // perform filtering
         try {
@@ -935,7 +959,8 @@ public class NarTask extends Jar {
         return status;
     }
 
-    protected DependencyStatusSets getClassifierTranslatedDependencies(Set artifacts, boolean stopOnFailure) throws GradleException {
+    protected DependencyStatusSets getClassifierTranslatedDependencies(Set artifacts, boolean stopOnFailure) throws  GradleException
+    {
         Set unResolvedArtifacts = new HashSet();
         Set resolvedArtifacts = artifacts;
         DependencyStatusSets status = new DependencyStatusSets();
@@ -944,8 +969,11 @@ public class NarTask extends Jar {
         // classifier and type
         // if this did something, we need to resolve the new artifacts
         if (StringUtils.isNotEmpty(this.getCopyDepClassifier().get())) {
-            ArtifactTranslator translator = new ClassifierTypeTranslator(this.getCopyDepClassifier().get(), this.type, this.factory);
-            artifacts = translator.translate(artifacts, logger);
+            ArtifactTranslator translator = new ClassifierTypeTranslator(
+                    this.getCopyDepClassifier().get(),
+                    this.getType().get(),
+                    this.getFactory().get());
+            artifacts = translator.translate(artifacts, getLog());
 
             status = filterMarkedDependencies(artifacts);
 
@@ -953,9 +981,11 @@ public class NarTask extends Jar {
             artifacts = status.getResolvedDependencies();
 
             // resolve the rest of the artifacts
-            ArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.getResolver(),
-                    this.getRepositories().get(), stopOnFailure);
-            resolvedArtifacts = artifactsResolver.resolve(artifacts, logger);
+            // FIXME: the repositories are maven local and remote.
+            ArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.getResolver().get(),
+                    null, null, stopOnFailure);
+            // FIXME: the logger is wrong.
+            resolvedArtifacts = null; // artifactsResolver.resolve(artifacts, null);
 
             // calculate the artifacts not resolved.
             unResolvedArtifacts.addAll(artifacts);
@@ -967,6 +997,16 @@ public class NarTask extends Jar {
         status.setUnResolvedDependencies(unResolvedArtifacts);
 
         return status;
+    }
+
+    // Construct a maven logger from the actual logger.
+    private Log getLog()
+    {
+        if (logger == null) {
+            return null; // this.log = new SystemStreamLog();
+        }
+
+        return null;
     }
 
     protected DependencyStatusSets filterMarkedDependencies(Set artifacts) throws GradleException {
@@ -1011,10 +1051,11 @@ public class NarTask extends Jar {
     private void makeNar() throws GradleException {
         File narFile = createArchive();
 
+        // TODO What is the propper way to write the nar?
         if (this.classifier.get() != null) {
-            this.getProjectHelper().get().attachArtifact(getProject(), "nar", this.classifier.get(), narFile);
+            //this.getProjectHelper().get().attachArtifact(getProject(), "nar", this.classifier.get(), narFile);
         } else {
-            getProject().getArtifacts().setFile(narFile);
+            //getProject().getArtifacts().setFile(narFile);
         }
     }
 
@@ -1090,8 +1131,8 @@ public class NarTask extends Jar {
 
             archiver.createArchive(getProject(), archive);
             return narFile;
-        } catch (ArchiverException | GradleException | ManifestException | IOException | DependencyResolutionRequiredException e) {
-            throw new GradleException("Error assembling NAR", e);
+        } catch (ArchiverException | GradleException ex) {
+            throw new GradleException("Error assembling NAR", ex);
         }
     }
 
@@ -1118,7 +1159,9 @@ public class NarTask extends Jar {
         filter.addFilter(new TypeFilter("nar", ""));
 
         // start with all artifacts.
-        ArtifactHandler artifacts = getProject().getArtifacts();
+        ArtifactHandler artifactHandler = getProject().getArtifacts();
+        // FIXME: how do I get a set of the artifacts? dependencies?
+        Set<Artifact> artifacts = null; // artifactHandler;
 
         // perform filtering
         try {
