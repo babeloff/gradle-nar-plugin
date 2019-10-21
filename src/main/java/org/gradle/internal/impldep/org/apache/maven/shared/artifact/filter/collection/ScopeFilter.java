@@ -8,7 +8,7 @@ package org.gradle.internal.impldep.org.apache.maven.shared.artifact.filter.coll
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.codehaus.plexus.util.StringUtils;
+import org.gradle.internal.impldep.org.codehaus.plexus.util.StringUtils;
 import org.gradle.internal.impldep.org.apache.maven.artifact.Artifact;
 import org.gradle.internal.impldep.org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 

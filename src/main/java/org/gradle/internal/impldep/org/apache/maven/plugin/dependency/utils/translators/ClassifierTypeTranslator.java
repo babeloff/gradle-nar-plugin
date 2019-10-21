@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.codehaus.plexus.util.StringUtils;
+import org.gradle.internal.impldep.org.codehaus.plexus.util.StringUtils;
 import org.gradle.internal.impldep.org.apache.maven.artifact.Artifact;
 import org.gradle.internal.impldep.org.apache.maven.artifact.factory.ArtifactFactory;
 import org.gradle.internal.impldep.org.apache.maven.plugin.logging.Log;

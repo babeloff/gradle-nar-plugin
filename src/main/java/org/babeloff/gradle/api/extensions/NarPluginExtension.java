@@ -1,4 +1,4 @@
-package org.babeloff.gradle.api.conventions;
+package org.babeloff.gradle.api.extensions;
 /**
  * https://github.com/gradle/gradle/blob/master/subprojects/plugins/src/main/java/org/gradle/api/plugins/WarPluginConvention.java
  */
@@ -7,8 +7,6 @@ import org.babeloff.gradle.api.annotations.Component;
 import org.babeloff.gradle.api.annotations.Parameter;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ArtifactRepositoryContainer;
-import org.gradle.api.artifacts.dsl.RepositoryHandler;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.Directory;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.graph.builder.DependencyGraphBuilder;
 import org.gradle.api.plugins.Convention;
@@ -16,8 +14,9 @@ import org.gradle.api.plugins.Convention;
 import java.io.File;
 import java.util.List;
 
-import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.gradle.internal.impldep.org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.gradle.internal.impldep.org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.gradle.internal.impldep.org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.gradle.internal.impldep.org.apache.maven.artifact.factory.ArtifactFactory;
 import org.gradle.internal.impldep.org.apache.maven.artifact.handler.ArtifactHandler;
 import org.gradle.internal.impldep.org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -35,7 +34,8 @@ import org.gradle.internal.impldep.org.apache.maven.project.ProjectBuilder;
  * https://gitbox.apache.org/repos/asf?p=nifi-maven.git;a=blob;f=src/main/java/org/apache/nifi/NarMojo.java
  *
  */
-abstract public class NarPluginConvention {
+abstract public class NarPluginExtension
+{
 
     // TODO: Do we need the components?
 
@@ -76,7 +76,7 @@ abstract public class NarPluginConvention {
      *
      * \@\component role="org.codehaus.plexus.archiver.Archiver" roleHint="jar"
      */
-    @Component(role = org.codehaus.plexus.archiver.Archiver.class, hint = "jar")
+    @Component(role = org.gradle.internal.impldep.org.codehaus.plexus.archiver.Archiver.class, hint = "jar")
     abstract protected JarArchiver getJarArchiver();
     abstract protected void setJarArchiver(JarArchiver value);
 

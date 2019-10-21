@@ -1,21 +1,15 @@
-package org.babeloff.gradle.api.conventions;
+package org.babeloff.gradle.api.extensions;
 
-import org.codehaus.plexus.archiver.Archiver;
-import org.codehaus.plexus.archiver.UnArchiver;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
-import org.codehaus.plexus.archiver.manager.DefaultArchiverManager;
-import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
-import org.codehaus.plexus.components.io.resources.PlexusIoResourceCollection;
+import org.gradle.internal.impldep.org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.gradle.internal.impldep.org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ArtifactRepositoryContainer;
-import org.gradle.api.artifacts.dsl.RepositoryHandler;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.graph.builder.DependencyGraphBuilder;
 import org.gradle.api.reflect.HasPublicType;
 import org.gradle.api.reflect.TypeOf;
+import org.gradle.internal.impldep.org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.gradle.internal.impldep.org.apache.maven.artifact.factory.ArtifactFactory;
 import org.gradle.internal.impldep.org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.gradle.internal.impldep.org.apache.maven.artifact.installer.ArtifactInstaller;
@@ -25,18 +19,17 @@ import org.gradle.internal.impldep.org.apache.maven.artifact.resolver.ArtifactRe
 import org.gradle.internal.impldep.org.apache.maven.project.MavenProjectHelper;
 import org.gradle.internal.impldep.org.apache.maven.project.ProjectBuilder;
 import org.gradle.internal.impldep.org.apache.maven.repository.legacy.metadata.ArtifactMetadataSource;
+import org.gradle.internal.impldep.org.codehaus.plexus.archiver.manager.DefaultArchiverManager;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static org.gradle.api.reflect.TypeOf.typeOf;
 
-public class DefaultNarPluginConvention extends NarPluginConvention implements HasPublicType {
+public class DefaultNarPluginExtension extends NarPluginExtension implements HasPublicType {
 
     // helpers
     private DateTimeFormatter versionFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
@@ -108,7 +101,7 @@ public class DefaultNarPluginConvention extends NarPluginConvention implements H
     private ProjectBuilder projectBuilder;
 
 
-    public DefaultNarPluginConvention(Project project) {
+    public DefaultNarPluginExtension(Project project) {
         final ProjectLayout layout = project.getLayout();
         final Directory projectDir = layout.getProjectDirectory();
         this.project = project;
@@ -130,7 +123,7 @@ public class DefaultNarPluginConvention extends NarPluginConvention implements H
 
     @Override
     public TypeOf<?> getPublicType() {
-        return TypeOf.typeOf(NarPluginConvention.class);
+        return TypeOf.typeOf(NarPluginExtension.class);
     }
 
     @Override

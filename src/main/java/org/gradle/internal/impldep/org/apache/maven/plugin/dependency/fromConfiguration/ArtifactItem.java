@@ -7,7 +7,7 @@ package org.gradle.internal.impldep.org.apache.maven.plugin.dependency.fromConfi
 
 import java.io.File;
 import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.DependencyUtil;
-import org.codehaus.plexus.util.StringUtils;
+import org.gradle.internal.impldep.org.codehaus.plexus.util.StringUtils;
 import org.gradle.internal.impldep.org.apache.maven.artifact.Artifact;
 
 public class ArtifactItem {

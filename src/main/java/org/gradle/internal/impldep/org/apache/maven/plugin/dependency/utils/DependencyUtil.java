@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.StringUtils;
+import org.gradle.internal.impldep.org.codehaus.plexus.util.IOUtil;
+import org.gradle.internal.impldep.org.codehaus.plexus.util.StringUtils;
 import org.gradle.internal.impldep.org.apache.maven.artifact.Artifact;
 import org.gradle.internal.impldep.org.apache.maven.plugin.logging.Log;
 

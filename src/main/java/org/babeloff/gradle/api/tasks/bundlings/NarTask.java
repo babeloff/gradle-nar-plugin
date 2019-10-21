@@ -4,6 +4,8 @@ package org.babeloff.gradle.api.tasks.bundlings;
 import groovy.lang.Closure;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.gradle.internal.impldep.org.apache.maven.archiver.MavenArchiveConfiguration;
+import org.gradle.internal.impldep.org.apache.maven.archiver.MavenArchiver;
 import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.DependencyStatusSets;
 import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.DependencyUtil;
 import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.filters.DestFileFilter;
@@ -20,12 +22,6 @@ import org.apache.definition.extraction.ExtensionClassLoader;
 import org.apache.definition.extraction.ExtensionClassLoaderFactory;
 import org.apache.definition.extraction.ExtensionDefinitionFactory;
 import org.apache.definition.extraction.StandardServiceAPIDefinition;
-import org.babeloff.gradle.api.conventions.MavenArchiveConfiguration;
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -52,6 +48,11 @@ import org.gradle.internal.impldep.org.apache.maven.project.MavenProjectHelper;
 import org.gradle.internal.impldep.org.apache.maven.project.ProjectBuilder;
 import org.gradle.internal.impldep.org.apache.maven.repository.legacy.metadata.ArtifactMetadataSource;
 
+import org.gradle.internal.impldep.org.codehaus.plexus.archiver.ArchiverException;
+import org.gradle.internal.impldep.org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.gradle.internal.impldep.org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.gradle.internal.impldep.org.codehaus.plexus.util.FileUtils;
+import org.gradle.internal.impldep.org.codehaus.plexus.util.StringUtils;
 import org.gradle.util.ConfigureUtil;
 import org.gradle.api.tasks.bundling.Jar;
 
@@ -1065,26 +1066,30 @@ public class NarTask extends Jar {
         MavenArchiver archiver = new MavenArchiver();
         archiver.setArchiver(this.jarArchiver.get());
         archiver.setOutputFile(narFile);
-        archiver.setForced(this.forceCreation.get());
+        // TODO archiver does not have the proper method?
+        // archiver.setForced(this.forceCreation.get());
 
         try {
             File contentDirectory = getClassesDirectory();
             if (contentDirectory.exists()) {
-                archiver.getArchiver().addDirectory(contentDirectory, getIncludeArray(), getExcludeArray());
+                // TODO problem with Maven archiver.
+                // archiver.getArchiver().addDirectory(contentDirectory, getIncludeArray(), getExcludeArray());
             } else {
                 logger.warn("NAR will be empty - no content was marked for inclusion!");
             }
 
             File extensionDocsFile = getExtensionsDocumentationFile();
             if (extensionDocsFile.exists()) {
-                archiver.getArchiver().addFile(extensionDocsFile, "META-INF/docs/" + extensionDocsFile.getName());
+                // TODO problem with Maven archiver
+                // archiver.getArchiver().addFile(extensionDocsFile, "META-INF/docs/" + extensionDocsFile.getName());
             } else {
                 logger.warn("NAR will not contain any Extensions' documentation - no META-INF/" + extensionDocsFile.getName() + " file found!");
             }
 
             File additionalDetailsDirectory = new File(getExtensionsDocumentationFile().getParentFile(), "additional-details");
             if (additionalDetailsDirectory.exists()) {
-                archiver.getArchiver().addDirectory(additionalDetailsDirectory, "META-INF/docs/additional-details/");
+                // TODO problem with Maven archiver
+                // archiver.getArchiver().addDirectory(additionalDetailsDirectory, "META-INF/docs/additional-details/");
             }
 
             final MavenArchiveConfiguration archive = this.getArchive().get();
@@ -1129,7 +1134,8 @@ public class NarTask extends Jar {
 
             archive.addManifestEntry("Clone-During-Instance-Class-Loading", String.valueOf(this.cloneDuringInstanceClassLoading.get()));
 
-            archiver.createArchive(getProject(), archive);
+            // TODO Mixed archiver maven vs gradle project
+            // archiver.createArchive(getProject(), archive);
             return narFile;
         } catch (ArchiverException | GradleException ex) {
             throw new GradleException("Error assembling NAR", ex);

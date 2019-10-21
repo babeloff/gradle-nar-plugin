@@ -13,7 +13,7 @@ import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.fromConfig
 import org.gradle.internal.impldep.org.apache.maven.plugin.dependency.utils.DependencyUtil;
 import org.gradle.internal.impldep.org.apache.maven.shared.artifact.filter.collection.AbstractArtifactsFilter;
 import org.gradle.internal.impldep.org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
-import org.codehaus.plexus.util.StringUtils;
+import org.gradle.internal.impldep.org.codehaus.plexus.util.StringUtils;
 import org.gradle.internal.impldep.org.apache.maven.artifact.Artifact;
 
 public class DestFileFilter extends AbstractArtifactsFilter implements ArtifactItemFilter {

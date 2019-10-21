@@ -2,8 +2,8 @@ package org.babeloff.gradle.api.plugins;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.babeloff.gradle.api.conventions.DefaultNarPluginConvention;
-import org.babeloff.gradle.api.conventions.NarPluginConvention;
+import org.babeloff.gradle.api.extensions.DefaultNarPluginExtension;
+import org.babeloff.gradle.api.extensions.NarPluginExtension;
 import org.babeloff.gradle.api.tasks.bundlings.NarTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -26,7 +26,6 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -68,9 +67,9 @@ class NarPlugin implements Plugin<Project>
         project.getPluginManager()
                 .apply(JavaPlugin.class);
 
-        final NarPluginConvention pluginConvention = project
+        final NarPluginExtension pluginConvention = project
                 .getExtensions()
-                .create(NAR_PLUGIN_NAME, DefaultNarPluginConvention.class);
+                .create(NAR_PLUGIN_NAME, DefaultNarPluginExtension.class);
 
         final TaskContainer tasks = project.getTasks();
 

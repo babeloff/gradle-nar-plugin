@@ -10,7 +10,6 @@ plugins {
     id("com.gradle.plugin-publish") version "0.10.1"
     id ("idea")
     `maven-publish`
-    `build-scan`
 }
 
 group = "org.babeloff"
@@ -43,8 +42,9 @@ dependencies {
 //    implementation (group="org.apache.nifi", name="nifi-framework-nar", version="1.9.2")
 //    implementation (group="org.apache.nifi", name="nifi-ui-extension", version="1.9.2")
 
-    implementation (group="org.codehaus.plexus", name="plexus-archiver", version="4.1.0")
-    implementation (group="org.codehaus.plexus", name="plexus-utils", version="3.3.0")
+//    implementation (group="org.codehaus.plexus", name="plexus-archiver", version="4.1.0")
+    // implementation (group="org.codehaus.plexus", name="plexus-interpolation", version="1.26")
+//    implementation (group="org.codehaus.plexus", name="plexus-utils", version="3.3.0")
 
 }
 
@@ -165,15 +165,5 @@ gradlePlugin {
             displayName = "NAR"
             description = "Generate Nifi Archive (NAR)"
         }
-    }
-}
-
-buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
-
-    if (!System.getenv("CI").isNullOrEmpty()) {
-        publishAlways()
-        tag("CI")
     }
 }
