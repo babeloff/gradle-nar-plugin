@@ -1,7 +1,11 @@
-
 // https://docs.gradle.org/current/javadoc/org/gradle/plugin/management/PluginManagementSpec.html
+// https://docs.gradle.com/enterprise/gradle-plugin/#upgrading_to_gradle_6
 
 pluginManagement {
+
+    plugins {
+        id("com.gradle.plugin-publish") version "0.10.1"
+    }
 
     resolutionStrategy {
 

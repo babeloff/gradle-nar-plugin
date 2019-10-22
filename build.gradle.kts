@@ -7,7 +7,7 @@ import java.util.Date
 plugins {
     id ("java")
     id ("java-gradle-plugin")
-    id("com.gradle.plugin-publish") version "0.10.1"
+    id("com.gradle.plugin-publish")
     id ("idea")
     `maven-publish`
 }
@@ -24,10 +24,10 @@ dependencies {
     compileOnly(gradleApi())
     // implementation("com.gradle.publish:plugin-publish-plugin:0.10.1")
 
-    testCompile(gradleTestKit())
+    testImplementation(gradleTestKit())
     testImplementation(group="org.junit.jupiter", name="junit-jupiter-api", version="5.5.2")
     testRuntimeOnly(group="org.junit.jupiter", name="junit-jupiter-engine", version="5.5.2")
-    testCompile (group="org.spockframework", name="spock-core", version="1.3-groovy-2.5")
+    testImplementation (group="org.spockframework", name="spock-core", version="1.3-groovy-2.5")
 
 
     //implementation (group="org.apache.nifi", name="nifi-properties", version="1.9.2")
