@@ -5,8 +5,8 @@ import java.util.Date
 // https://github.com/gradle-plugins/toolbox
 
 plugins {
-    id ("java")
-    id ("java-gradle-plugin")
+    `kotlin-dsl`
+    `java-gradle-plugin`
     id("com.gradle.plugin-publish")
     id ("idea")
     `maven-publish`
@@ -22,53 +22,18 @@ repositories {
 
 dependencies {
     compileOnly(gradleApi())
-    // implementation("com.gradle.publish:plugin-publish-plugin:0.10.1")
 
     testImplementation(gradleTestKit())
     testImplementation(group="org.junit.jupiter", name="junit-jupiter-api", version="5.5.2")
     testRuntimeOnly(group="org.junit.jupiter", name="junit-jupiter-engine", version="5.5.2")
-    testImplementation (group="org.spockframework", name="spock-core", version="1.3-groovy-2.5")
 
-
-    //implementation (group="org.apache.nifi", name="nifi-properties", version="1.9.2")
     implementation (group="org.apache.nifi", name="nifi-nar-utils", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-api", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-mock", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-processor-utils", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-framework-api", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-record", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-standard-utils", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-framework-nar-utils", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-framework-nar", version="1.9.2")
-//    implementation (group="org.apache.nifi", name="nifi-ui-extension", version="1.9.2")
-
-//    implementation (group="org.codehaus.plexus", name="plexus-archiver", version="4.1.0")
-    // implementation (group="org.codehaus.plexus", name="plexus-interpolation", version="1.26")
-//    implementation (group="org.codehaus.plexus", name="plexus-utils", version="3.3.0")
-
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
-
-//
-//sourceSets {
-//    integrationTest {
-//        groovy.srcDir file("src/integTest/groovy")
-//        resources.srcDir file("src/integTest/resources")
-//        compileClasspath += sourceSets.main.output + configurations.testRuntime
-//        runtimeClasspath += output + compileClasspath
-//    }
-//    functionalTest {
-//        groovy.srcDir file("src/funcTest/groovy")
-//        resources.srcDir file("src/funcTest/resources")
-//        compileClasspath += sourceSets.main.output + configurations.testRuntime
-//        runtimeClasspath += output + compileClasspath
-//    }
-//}
-//
 
 tasks {
     withType<JavaCompile> {
@@ -114,28 +79,6 @@ tasks {
         dependsOn(plugin)
     }
 
-//    named<Test>("integrationTest") {
-//        description = "Runs the integration tests."
-//        group = "verification"
-//        testClassesDirs = sourceSets.integrationTest.output.classesDirs
-//        classpath = sourceSets.integrationTest.runtimeClasspath
-//        mustRunAfter test
-//    }
-//
-//    val functionalTest by registering(Test::class) {
-//        description = "Runs the functional tests."
-//        group = "verification"
-//        testClassesDirs = sourceSets.functionalTest.output.classesDirs
-//        classpath = sourceSets.functionalTest.runtimeClasspath
-//        mustRunAfter test
-//    }
-//
-//    check.dependsOn (functionalTest)
-//
-//    named<Jar>("sourceJar") {
-//        classifier = "sources"
-//        from (sourceSets . main . allJava)
-//    }
 }
 
 /**
