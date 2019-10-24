@@ -13,6 +13,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/greeting-gradle-plugin" />
+            <option value="$PROJECT_DIR$/nar-gradle-plugin" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

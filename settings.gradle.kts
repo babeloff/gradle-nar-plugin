@@ -35,3 +35,5 @@ gradleEnterprise {
     }
 }
 
+include(":greeting-gradle-plugin")
+include(":nar-gradle-plugin")
