@@ -1,6 +1,6 @@
 package org.babeloff.gradle.plugin.nifi
 
-import org.babeloff.gradle.api.tasks.NifiTask
+import org.babeloff.gradle.api.tasks.NifiTaskUnmanaged
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.JavaPlugin
@@ -46,7 +46,7 @@ class NifiPluginTest extends Specification {
         project.apply plugin: PLUGIN
 
         then:
-        NifiTask nifi = project.tasks[NIFI_TASK]
+        NifiTaskUnmanaged nifi = project.tasks[NIFI_TASK]
         nifi.extension == NIFI_TASK
     }
 
@@ -65,7 +65,7 @@ class NifiPluginTest extends Specification {
         project.apply plugin: PLUGIN
 
         then:
-        NifiTask nifi = project.tasks[NIFI_TASK]
+        NifiTaskUnmanaged nifi = project.tasks[NIFI_TASK]
         !nifi.manifest.attributes.containsKey('Nifi-Dependency-Id')
     }
 }

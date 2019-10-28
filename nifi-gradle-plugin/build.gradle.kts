@@ -27,7 +27,7 @@ dependencies {
     testImplementation(group="org.junit.jupiter", name="junit-jupiter-api", version="5.5.2")
     testRuntimeOnly(group="org.junit.jupiter", name="junit-jupiter-engine", version="5.5.2")
 
-    implementation (group="org.apache.nifi", name="nifi-nifi-utils", version="1.9.2")
+    implementation (group="org.apache.nifi", name="nifi-nar-utils", version="1.9.2")
 }
 
 java {
@@ -89,11 +89,11 @@ pluginBundle {
     website = "https://github.com/babeloff/nifi-gradle-plugin"
     vcsUrl = "https://github.com/babeloff/nifi-gradle-plugin"
     description = "Nifi Archive (NIFI) generator."
-    tags = listOf("nifi", "archive", "nifi", "pulsar")
+    tags = listOf("nifi", "archive", "nar", "pulsar", "managed")
 
     plugins {
         create("NifiPlugin") {
-            displayName = "Gradle Nifi Archive (NIFI) plugin"
+            displayName = "Gradle Nifi Archive (NAR) plugin"
         }
     }
 }
@@ -106,7 +106,7 @@ gradlePlugin {
             id = "org.babeloff.nifi-plugin"
             implementationClass = "org.babeloff.gradle.api.plugins.NifiPlugin"
             displayName = "NIFI"
-            description = "Generate Nifi Archive (NIFI)"
+            description = "Generate Nifi Archive (NAR)"
         }
     }
 }

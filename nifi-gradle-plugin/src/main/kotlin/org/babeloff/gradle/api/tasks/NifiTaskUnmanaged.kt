@@ -31,10 +31,10 @@ import javax.xml.stream.XMLOutputFactory
  *
  * @author Fred Eisele
  */
-open class NifiTask : DefaultTask() {
+open class NifiTaskUnmanaged : DefaultTask() {
 
     companion object {
-        private val logger = LogManager.getLogger(NifiTask::class.java)
+        private val logger = LogManager.getLogger(NifiTaskUnmanaged::class.java)
 
         val NIFI_EXTENSION = "nar"
 
@@ -450,10 +450,16 @@ open class NifiTask : DefaultTask() {
     @Input
     val nifiDependencyVersion = project.objects.property(String::class.java)
     init {
+        /**
+         * Nifi archives can have a parent nifi. The parent is optional and there can be at maximum one parent.
+         * The parent relationship is added to the manifest.
+         * To tell the plugin to add a parent you have to add a nifi dependency to the nifi configuration.
+         * The nifi configuration is created by the plugin.
+         */
         logger.info("initializing nifi task dependency")
-        nifiDependencyGroup.set()
-        nifiDependencyId.set(null)
-        nifiDependencyVersion.set(null)
+        nifiDependencyGroup.set("org.apache.nifi")
+        nifiDependencyId.set("nifi-standard-services-api-nifi")
+        nifiDependencyVersion.set("0.2.1")
     }
 
 
@@ -474,8 +480,8 @@ open class NifiTask : DefaultTask() {
     var buildRevision: String = VERSION_FORMAT.format(LocalDateTime.now())
 
     /**
-     * Allows a NIFI to specify if it's resources should be cloned when a component that depends on this NIFI
-     * is performing class loader isolation.
+     * Allows a NIFI to specify if it's resources should be cloned when a component
+     * that depends on this NIFI is performing class loader isolation.
      */
     @Parameter(property = "cloneDuringInstanceClassLoading", defaultValue = "false", required = false)
     @Input

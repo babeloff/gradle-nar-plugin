@@ -27,7 +27,7 @@ dependencies {
     testImplementation(group="org.junit.jupiter", name="junit-jupiter-api", version="5.5.2")
     testRuntimeOnly(group="org.junit.jupiter", name="junit-jupiter-engine", version="5.5.2")
 
-    implementation (group="org.apache.nifi", name="nifi-nifi-utils", version="1.9.2")
+    implementation (group="org.apache.nifi", name="nifi-nar-utils", version="1.9.2")
 }
 
 java {
