@@ -27,7 +27,7 @@ dependencies {
     testImplementation(group="org.junit.jupiter", name="junit-jupiter-api", version="5.5.2")
     testRuntimeOnly(group="org.junit.jupiter", name="junit-jupiter-engine", version="5.5.2")
 
-    implementation (group="org.apache.nifi", name="nifi-nar-utils", version="1.9.2")
+    implementation (group="org.apache.nifi", name="nifi-nifi-utils", version="1.9.2")
 }
 
 java {
@@ -86,8 +86,8 @@ tasks {
  *  * https://plugins.gradle.org/user/register
  */
 pluginBundle {
-    website = "https://github.com/babeloff/nar-gradle-plugin"
-    vcsUrl = "https://github.com/babeloff/nar-gradle-plugin"
+    website = "https://github.com/babeloff/nifi-gradle-plugin"
+    vcsUrl = "https://github.com/babeloff/nifi-gradle-plugin"
     description = "Greeting generator."
     tags = listOf("hello", "archive", "world")
 
@@ -102,8 +102,8 @@ pluginBundle {
 gradlePlugin {
     //  testSourceSets (sourceSets . functionalTest)
     plugins {
-        create("NarPlugin") {
-            id = "org.babeloff.nar-plugin"
+        create("NifiPlugin") {
+            id = "org.babeloff.nifi-plugin"
             implementationClass = "org.babeloff.gradle.api.plugins.GreetingPlugin"
             displayName = "Hello World"
             description = "Generate Greeting"

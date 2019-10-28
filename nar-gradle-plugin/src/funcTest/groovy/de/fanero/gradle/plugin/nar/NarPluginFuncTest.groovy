@@ -1,4 +1,4 @@
-package org.babeloff.gradle.plugin.nar
+package org.babeloff.gradle.plugin.nifi
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
@@ -13,9 +13,9 @@ import java.util.zip.ZipInputStream
 /**
  * @author Robert Kühne
  */
-class NarPluginFuncTest extends Specification {
+class NifiPluginFuncTest extends Specification {
 
-    private static final TEST_BASE_NAME = 'nar-test'
+    private static final TEST_BASE_NAME = 'nifi-test'
     private static final TEST_VERSION = '1.0'
 
     @Rule
@@ -28,9 +28,9 @@ class NarPluginFuncTest extends Specification {
         buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
 plugins {
-    id 'org.babeloff.gradle.plugin.nar'
+    id 'org.babeloff.gradle.plugin.nifi'
 }
-nar {
+nifi {
     baseName '${TEST_BASE_NAME}'
 }
 group = 'org.babeloff.test'
@@ -38,16 +38,16 @@ version = '${TEST_VERSION}'
 """
         settingsFile = testProjectDir.newFile('settings.gradle')
         settingsFile << """
-rootProject.name = "nar-test"
+rootProject.name = "nifi-test"
 """
     }
 
-    def "test simple nar"() {
+    def "test simple nifi"() {
 
         when:
         GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('nar')
+                .withArguments('nifi')
                 .withPluginClasspath()
                 .build()
 
@@ -55,26 +55,26 @@ rootProject.name = "nar-test"
 
         then:
         manifest != null
-        manifest.getMainAttributes().getValue('Nar-Group') == 'org.babeloff.test'
-        manifest.getMainAttributes().getValue('Nar-Id') == 'nar-test'
-        manifest.getMainAttributes().getValue('Nar-Version') == '1.0'
-        manifest.getMainAttributes().getValue('Nar-Dependency-Id') == null
+        manifest.getMainAttributes().getValue('Nifi-Group') == 'org.babeloff.test'
+        manifest.getMainAttributes().getValue('Nifi-Id') == 'nifi-test'
+        manifest.getMainAttributes().getValue('Nifi-Version') == '1.0'
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Id') == null
     }
 
-    def "test parent nar entry"() {
+    def "test parent nifi entry"() {
 
         buildFile << """
 repositories {
     mavenCentral()
 }
 dependencies {
-    nar 'org.apache.nifi:nifi-standard-services-api-nar:0.2.1'
+    nifi 'org.apache.nifi:nifi-standard-services-api-nifi:0.2.1'
 }
 """
         when:
         GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('nar')
+                .withArguments('nifi')
                 .withPluginClasspath()
                 .build()
 
@@ -82,29 +82,29 @@ dependencies {
 
         then:
         manifest != null
-        manifest.getMainAttributes().getValue('Nar-Group') == 'org.babeloff.test'
-        manifest.getMainAttributes().getValue('Nar-Id') == 'nar-test'
-        manifest.getMainAttributes().getValue('Nar-Version') == '1.0'
-        manifest.getMainAttributes().getValue('Nar-Dependency-Group') == 'org.apache.nifi'
-        manifest.getMainAttributes().getValue('Nar-Dependency-Id') == 'nifi-standard-services-api-nar'
-        manifest.getMainAttributes().getValue('Nar-Dependency-Version') == '0.2.1'
+        manifest.getMainAttributes().getValue('Nifi-Group') == 'org.babeloff.test'
+        manifest.getMainAttributes().getValue('Nifi-Id') == 'nifi-test'
+        manifest.getMainAttributes().getValue('Nifi-Version') == '1.0'
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Group') == 'org.apache.nifi'
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Id') == 'nifi-standard-services-api-nifi'
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Version') == '0.2.1'
     }
 
-    def "test multiple parent nar entries"() {
+    def "test multiple parent nifi entries"() {
 
         buildFile << """
 repositories {
     mavenCentral()
 }
 dependencies {
-    nar 'org.apache.nifi:nifi-standard-services-api-nar:0.2.1'
-    nar 'org.apache.nifi:nifi-enrich-nar:1.5.0'
+    nifi 'org.apache.nifi:nifi-standard-services-api-nifi:0.2.1'
+    nifi 'org.apache.nifi:nifi-enrich-nifi:1.5.0'
 }
 """
         expect:
         GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('nar')
+                .withArguments('nifi')
                 .withPluginClasspath()
                 .buildAndFail()
     }
@@ -122,7 +122,7 @@ dependencies {
         when:
         GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('nar')
+                .withArguments('nifi')
                 .withPluginClasspath()
                 .build()
 
@@ -137,43 +137,43 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    nar 'org.apache.nifi:nifi-standard-services-api-nar:0.2.1'
+    nifi 'org.apache.nifi:nifi-standard-services-api-nifi:0.2.1'
 }
-nar {
+nifi {
     manifest {
-        attributes 'Nar-Group': 'group-override', 'Nar-Id': 'id-override', 'Nar-Version': 'version-override'
-        attributes 'Nar-Dependency-Group': 'Nar-Dependency-Group-override', 'Nar-Dependency-Id': 'Nar-Dependency-Id-override', 'Nar-Dependency-Version': 'Nar-Dependency-Version-override'
+        attributes 'Nifi-Group': 'group-override', 'Nifi-Id': 'id-override', 'Nifi-Version': 'version-override'
+        attributes 'Nifi-Dependency-Group': 'Nifi-Dependency-Group-override', 'Nifi-Dependency-Id': 'Nifi-Dependency-Id-override', 'Nifi-Dependency-Version': 'Nifi-Dependency-Version-override'
     }
 }
 """
         when:
         GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('nar')
+                .withArguments('nifi')
                 .withPluginClasspath()
                 .build()
 
         Manifest manifest = extractManifest()
 
         then:
-        manifest.getMainAttributes().getValue('Nar-Group') == 'group-override'
-        manifest.getMainAttributes().getValue('Nar-Id') == 'id-override'
-        manifest.getMainAttributes().getValue('Nar-Version') == 'version-override'
-        manifest.getMainAttributes().getValue('Nar-Dependency-Group') == 'Nar-Dependency-Group-override'
-        manifest.getMainAttributes().getValue('Nar-Dependency-Id') == 'Nar-Dependency-Id-override'
-        manifest.getMainAttributes().getValue('Nar-Dependency-Version') == 'Nar-Dependency-Version-override'
+        manifest.getMainAttributes().getValue('Nifi-Group') == 'group-override'
+        manifest.getMainAttributes().getValue('Nifi-Id') == 'id-override'
+        manifest.getMainAttributes().getValue('Nifi-Version') == 'version-override'
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Group') == 'Nifi-Dependency-Group-override'
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Id') == 'Nifi-Dependency-Id-override'
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Version') == 'Nifi-Dependency-Version-override'
     }
 
     def "test override bundled dependencies"() {
         buildFile << """
-nar {
+nifi {
     bundledDependencies = [jar]
 }
 """
         when:
         GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('nar')
+                .withArguments('nifi')
                 .withPluginClasspath()
                 .build()
 
@@ -183,14 +183,14 @@ nar {
 
     def "test empty bundled dependencies"() {
         buildFile << """
-nar {
+nifi {
     bundledDependencies = null
 }
 """
         when:
         GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('nar')
+                .withArguments('nifi')
                 .withPluginClasspath()
                 .build()
 
@@ -200,14 +200,14 @@ nar {
 
     def "test remove parent configuration"() {
         buildFile << """
-nar {
-    parentNarConfiguration = null
+nifi {
+    parentNifiConfiguration = null
 }
 """
         when:
         GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('nar')
+                .withArguments('nifi')
                 .withPluginClasspath()
                 .build()
 
@@ -215,9 +215,9 @@ nar {
 
         then:
         countBundledJars() == 1
-        manifest.getMainAttributes().getValue('Nar-Dependency-Group') == null
-        manifest.getMainAttributes().getValue('Nar-Dependency-Id') == null
-        manifest.getMainAttributes().getValue('Nar-Dependency-Version') == null
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Group') == null
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Id') == null
+        manifest.getMainAttributes().getValue('Nifi-Dependency-Version') == null
     }
 
     int countBundledJars() {
@@ -248,7 +248,7 @@ nar {
     }
 
     private void eachZipEntry(Closure closure) {
-        narFile().withInputStream {
+        nifiFile().withInputStream {
             ZipInputStream zip = new ZipInputStream(it)
             ZipEntry entry = zip.nextEntry
             while (entry != null) {
@@ -261,7 +261,7 @@ nar {
         }
     }
 
-    private File narFile() {
-        new File(testProjectDir.root, "build/libs/${TEST_BASE_NAME}-${TEST_VERSION}.nar")
+    private File nifiFile() {
+        new File(testProjectDir.root, "build/libs/${TEST_BASE_NAME}-${TEST_VERSION}.nifi")
     }
 }

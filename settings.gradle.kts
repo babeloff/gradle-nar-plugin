@@ -17,7 +17,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "nar-gradle-plugin"
+rootProject.name = "nifi-gradle-plugin"
 
 plugins {
     id("com.gradle.enterprise").version("3.0")
@@ -35,5 +35,6 @@ gradleEnterprise {
     }
 }
 
+include(":demo-gradle-plugin")
 include(":greeting-gradle-plugin")
-include(":nar-gradle-plugin")
+include(":nifi-gradle-plugin")

@@ -1,17 +1,14 @@
 package org.babeloff.gradle.api.tasks
 
 
-import groovy.lang.Closure
 import org.apache.log4j.LogManager
 import org.babeloff.gradle.api.annotations.Parameter
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.gradle.jvm.tasks.Jar
-import org.gradle.util.ConfigureUtil
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -24,20 +21,22 @@ import java.util.jar.JarFile
 import javax.xml.stream.XMLOutputFactory
 
 /**
- * Assembles a NAR archive.
+ * Assembles a NIFI archive.
  *
  * The specification for which can be found at:
  * https://gitbox.apache.org/repos/asf?p=nifi-maven.git
- * https://gitbox.apache.org/repos/asf?p=nifi-maven.git;a=blob;f=src/main/java/org/apache/nifi/NarMojo.java
+ * https://gitbox.apache.org/repos/asf?p=nifi-maven.git;a=blob;f=src/main/java/org/apache/nifi/NifiMojo.java
+ *
+ * The following is *not* the same http://maven-nifi.github.io/index.html
  *
  * @author Fred Eisele
  */
-open class NarTask : DefaultTask() {
+open class NifiTask : DefaultTask() {
 
     companion object {
-        private val logger = LogManager.getLogger(NarTask::class.java)
+        private val logger = LogManager.getLogger(NifiTask::class.java)
 
-        val NAR_EXTENSION = "nar"
+        val NIFI_EXTENSION = "nar"
 
         val SERVICES_DIRECTORY = "META-INF/services/"
         val BUNDLE_DIRECTORY = "META-INF/bundled-dependencies/"
@@ -52,7 +51,7 @@ open class NarTask : DefaultTask() {
     }
 
     init {
-        logger.info("initializing nar task")
+        logger.info("initializing nifi task")
     }
 
     /**
@@ -71,7 +70,7 @@ open class NarTask : DefaultTask() {
     @Input
     val includeList = project.objects.listProperty(String::class.java)
     init {
-        logger.info("initializing nar task includes")
+        logger.info("initializing nifi task includes")
         includeList.value(DEFAULT_INCLUDES)
     }
     /**
@@ -84,10 +83,10 @@ open class NarTask : DefaultTask() {
         excludeList.value(DEFAULT_EXCLUDES)
     }
     /**
-     * Name of the generated NAR.
+     * Name of the generated NIFI.
      *
      */
-    @Parameter(alias = "narName", property = "nar.finalName",
+    @Parameter(alias = "nifiName", property = "nifi.finalName",
             defaultValue = "\${project.getName()}", required = true)
     @Input
     var finalName: String = project.name
@@ -119,7 +118,7 @@ open class NarTask : DefaultTask() {
     @OutputFile
     val defaultManifestFiles  = project.objects.fileProperty()
     init {
-        logger.info("initializing nar task defaultManifestFiles")
+        logger.info("initializing nifi task defaultManifestFiles")
         defaultManifestFiles.set(File(project.buildDir.canonicalFile,  "META-INF/MANIFEST.MF").canonicalFile)
     }
 
@@ -129,7 +128,7 @@ open class NarTask : DefaultTask() {
      *
      * @since 2.2
      */
-    @Parameter(property = "nar.useDefaultManifestFile", defaultValue = "false")
+    @Parameter(property = "nifi.useDefaultManifestFile", defaultValue = "false")
     @Input
     var useDefaultManifestFile = false
 
@@ -140,7 +139,7 @@ open class NarTask : DefaultTask() {
      * Whether creating the archive should be forced.
      *
      */
-    @Parameter(property = "nar.forceCreation", defaultValue = "false")
+    @Parameter(property = "nifi.forceCreation", defaultValue = "false")
     @Input
     var forceCreation = false
 
@@ -150,7 +149,7 @@ open class NarTask : DefaultTask() {
      */
     @Parameter(property = "classifier")
     @Input
-    var archiveClassifier: String? = "nar"
+    var archiveClassifier: String? = "nifi"
 
 
 //    @Component
@@ -230,12 +229,12 @@ open class NarTask : DefaultTask() {
 
     /**
      * Specify type to look for when constructing artifact based on classifier.
-     * Example: java-source,jar,war, nar
+     * Example: java-source,jar,war, nifi
      *
      */
-    @Parameter(property = "type", required = true, defaultValue = "nar")
+    @Parameter(property = "type", required = true, defaultValue = "nifi")
     @Input
-    var type = "nar"
+    var type = "nifi"
 
     /**
      * Comma separated list of Artifact names too exclude.
@@ -278,7 +277,7 @@ open class NarTask : DefaultTask() {
     @OutputDirectory
     val markersDirectory = project.objects.directoryProperty()
     init {
-        logger.info("initializing nar task markers directory")
+        logger.info("initializing nifi task markers directory")
         markersDirectory.set( File(project.buildDir, "dependency-maven-plugin-markers").canonicalFile )
     }
 
@@ -397,64 +396,64 @@ open class NarTask : DefaultTask() {
     var outputAbsoluteArtifactFilename = false
 
     /**
-     * The values to use for populating the Nar-Group, Nar-Id, and Nar-Version in the MANIFEST file.
+     * The values to use for populating the Nifi-Group, Nifi-Id, and Nifi-Version in the MANIFEST file.
      * By default these values will be set to the standard Maven project equivalents,
      * but they may be overridden through properties.
      *
-     * For example if the build.gradle.kts for the nifi-test-nar contained the following:
+     * For example if the build.gradle.kts for the nifi-test-nifi contained the following:
      *
      * groupId = "org.apache.nifi"
-     * artifactId = nifi-test-nar"
+     * artifactId = nifi-test-nifi"
      * version = "1.0"
      *
-     * nar {
-     * narGroup = "org.apache.nifi.overridden"
-     * narId = "nifi-overridden-test-nar"
-     * narVersion = "2.0"
+     * nifi {
+     * nifiGroup = "org.apache.nifi.overridden"
+     * nifiId = "nifi-overridden-test-nifi"
+     * nifiVersion = "2.0"
      * }
      *
      * It would produce a MANIFEST with:
      *
-     * Nar-Id: nifi-overridden-test-nar
-     * Nar-Group: org.apache.nifi.overridden
-     * Nar-Version: 2.0
+     * Nifi-Id: nifi-overridden-test-nifi
+     * Nifi-Group: org.apache.nifi.overridden
+     * Nifi-Version: 2.0
      *
      */
 
-    @Parameter(property = "narGroup", defaultValue = "\${project.groupId}", required = true)
+    @Parameter(property = "nifiGroup", defaultValue = "\${project.groupId}", required = true)
     @Input
-    var narGroup: String
+    var nifiGroup: String
 
-    @Parameter(property = "narId", defaultValue = "\${project.artifactId}", required = true)
+    @Parameter(property = "nifiId", defaultValue = "\${project.artifactId}", required = true)
     @Input
-    var narId: String
+    var nifiId: String
 
-    @Parameter(property = "narVersion", defaultValue = "\${project.version}", required = true)
+    @Parameter(property = "nifiVersion", defaultValue = "\${project.version}", required = true)
     @Input
-    var narVersion: String
+    var nifiVersion: String
 
     init {
-        narGroup = project.group.toString()
-        narId = project.displayName
-        narVersion = project.version.toString()
+        nifiGroup = project.group.toString()
+        nifiId = project.displayName
+        nifiVersion = project.version.toString()
     }
 
-    @Parameter(property = "narDependencyGroup", required = false, defaultValue = "null")
+    @Parameter(property = "nifiDependencyGroup", required = false, defaultValue = "null")
     @Input
-    val narDependencyGroup = project.objects.property(String::class.java)
+    val nifiDependencyGroup = project.objects.property(String::class.java)
 
-    @Parameter(property = "narDependencyId", required = false, defaultValue = "null")
+    @Parameter(property = "nifiDependencyId", required = false, defaultValue = "null")
     @Input
-    val narDependencyId = project.objects.property(String::class.java)
+    val nifiDependencyId = project.objects.property(String::class.java)
 
-    @Parameter(property = "narDependencyVersion", required = false, defaultValue = "null")
+    @Parameter(property = "nifiDependencyVersion", required = false, defaultValue = "null")
     @Input
-    val narDependencyVersion = project.objects.property(String::class.java)
+    val nifiDependencyVersion = project.objects.property(String::class.java)
     init {
-        logger.info("initializing nar task dependency")
-        narDependencyGroup.set(null)
-        narDependencyId.set(null)
-        narDependencyVersion.set(null)
+        logger.info("initializing nifi task dependency")
+        nifiDependencyGroup.set()
+        nifiDependencyId.set(null)
+        nifiDependencyVersion.set(null)
     }
 
 
@@ -475,7 +474,7 @@ open class NarTask : DefaultTask() {
     var buildRevision: String = VERSION_FORMAT.format(LocalDateTime.now())
 
     /**
-     * Allows a NAR to specify if it's resources should be cloned when a component that depends on this NAR
+     * Allows a NIFI to specify if it's resources should be cloned when a component that depends on this NIFI
      * is performing class loader isolation.
      */
     @Parameter(property = "cloneDuringInstanceClassLoading", defaultValue = "false", required = false)
@@ -496,7 +495,7 @@ open class NarTask : DefaultTask() {
 
     /**
      * The [ProjectBuilder] used to generate the [MavenProject]
-     * for the nar artifact the dependency tree is being generated for.
+     * for the nifi artifact the dependency tree is being generated for.
      */
 //    @Component
 //    val projectBuilder: ProjectBuilder = ProjectBuilderDefault()
@@ -526,18 +525,18 @@ open class NarTask : DefaultTask() {
         get() = File(classesDirectory, "META-INF/bundled-dependencies")
 
     private
-    // get nar dependencies
+    // get nifi dependencies
     // start with all artifacts.
     // FIXME: how do I get a set of the artifacts? dependencies?
     // artifactHandler;
     // perform filtering
-    // ensure there is a single nar dependency
-    val narDependency: NarDependency?
+    // ensure there is a single nifi dependency
+    val nifiDependency: NifiDependency?
         @Throws(GradleException::class)
         get() {
-            var narDependency: NarDependency? = null
+            var nifiDependency: NifiDependency? = null
 //            val filter = FilterArtifacts()
-//            filter.addFilter(TypeFilter("nar", ""))
+//            filter.addFilter(TypeFilter("nifi", ""))
             val artifactHandler = project.artifacts
 //            var artifacts: Set<Artifact>? = artifactHandler.
 ////            try {
@@ -547,22 +546,22 @@ open class NarTask : DefaultTask() {
 ////            }
 //
 //            if (artifacts.size > 1) {
-//                throw GradleException("Each NAR represents a ClassLoader. A NAR dependency allows that NAR's ClassLoader to be " + "used as the parent of this NAR's ClassLoader. As a result, only a single NAR dependency is allowed.")
+//                throw GradleException("Each NIFI represents a ClassLoader. A NIFI dependency allows that NIFI's ClassLoader to be " + "used as the parent of this NIFI's ClassLoader. As a result, only a single NIFI dependency is allowed.")
 //            }
 //            if (artifacts.size == 1) {
 //                val artifact = artifacts.iterator().next() as Artifact
-//                narDependency = NarDependency(artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion())
+//                nifiDependency = NifiDependency(artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion())
 //            }
 
-            return narDependency
+            return nifiDependency
         }
 
 
     /**
      *
-     * The specification for NAR can be found here:
-     * * http://nifi.apache.org/docs/nifi-docs/html/developer-guide.html#nars
-     * * http://maven-nar.github.io/
+     * The specification for NIFI can be found here:
+     * * http://nifi.apache.org/docs/nifi-docs/html/developer-guide.html#nifis
+     * * http://maven-nifi.github.io/
      *
      */
     @TaskAction
@@ -571,18 +570,18 @@ open class NarTask : DefaultTask() {
 
         val archive = Jar()
 
-        logger.info("executing nar task")
+        logger.info("executing nifi task")
 
         val metaInf = archive.metaInf
-        archive.archiveExtension.set(NAR_EXTENSION)
+        archive.archiveExtension.set(NIFI_EXTENSION)
         val rootSpec = archive.rootSpec
 
          /**
-         * Specify which dependencies are to be bundled in the NAR.
+         * Specify which dependencies are to be bundled in the NIFI.
          *
          * The bundled-dependencies contains the jar files that will
          * be used by the processor and accompanying controller services
-         * (if the NAR contains a controller service).
+         * (if the NIFI contains a controller service).
          * These jar files will be loaded in the ClassLoader that is dedicated to that processor.
          */
         logger.trace("configure bundled dependencies()")
@@ -597,7 +596,7 @@ open class NarTask : DefaultTask() {
 
 
         //        configureManifest();
-        //        configureParentNarManifestEntry();
+        //        configureParentNifiManifestEntry();
 
         copyDependencies()
 
@@ -614,12 +613,12 @@ open class NarTask : DefaultTask() {
             }
         }
 
-        makeNar(archive)
+        makeNifi(archive)
     }
 
 
     /**
-     * Adds some content to the `WEB-INF` directory for this NAR archive.
+     * Adds some content to the `WEB-INF` directory for this NIFI archive.
      *
      *
      *
@@ -635,7 +634,7 @@ open class NarTask : DefaultTask() {
 //    }
 
     /**
-     * Adds some content to the `WEB-INF` directory for this NAR archive.
+     * Adds some content to the `WEB-INF` directory for this NIFI archive.
      *
      *
      * The given action is executed to configure a [CopySpec].
@@ -653,7 +652,7 @@ open class NarTask : DefaultTask() {
 
 //
 //    /**
-//     * Adds files to the classpath to include in the NAR archive.
+//     * Adds files to the classpath to include in the NIFI archive.
 //     *
 //     * @param classpath The files to add. These are evaluated as per [org.gradle.api.Project.files]
 //     */
@@ -664,9 +663,9 @@ open class NarTask : DefaultTask() {
 
     @Throws(GradleException::class)
     private fun generateDocumentation() {
-        logger.info("Generating documentation for NiFi extensions in the NAR...")
+        logger.info("Generating documentation for NiFi extensions in the NIFI...")
 
-        // Create the ClassLoader for the NAR
+        // Create the ClassLoader for the NIFI
 //        val classLoaderFactory = createClassLoaderFactory()
 
 //        val extensionClassLoader: ExtensionClassLoader
@@ -677,9 +676,9 @@ open class NarTask : DefaultTask() {
 //                throw GradleException("Failed to create Extension Documentation", e)
 //            } else {
 //                if (logger.isDebugEnabled()) {
-//                    logger.debug("Unable to create a ClassLoader for documenting extensions. If this NAR contains any NiFi Extensions, those extensions will not be documented.", e)
+//                    logger.debug("Unable to create a ClassLoader for documenting extensions. If this NIFI contains any NiFi Extensions, those extensions will not be documented.", e)
 //                } else {
-//                    logger.warn("Unable to create a ClassLoader for documenting extensions. If this NAR contains any NiFi Extensions, those extensions will not be documented. " + "Enable mvn DEBUG output for more information (mvn -X).")
+//                    logger.warn("Unable to create a ClassLoader for documenting extensions. If this NIFI contains any NiFi Extensions, those extensions will not be documented. " + "Enable mvn DEBUG output for more information (mvn -X).")
 //                }
 //                return
 //            }
@@ -710,7 +709,7 @@ open class NarTask : DefaultTask() {
                     try {
 //                        docWriterClass = Class.forName(DOCUMENTATION_WRITER_CLASS_NAME, false, extensionClassLoader)
                     } catch (e: ClassNotFoundException) {
-                        logger.warn("Cannot locate class $DOCUMENTATION_WRITER_CLASS_NAME, so no documentation will be generated for the extensions in this NAR")
+                        logger.warn("Cannot locate class $DOCUMENTATION_WRITER_CLASS_NAME, so no documentation will be generated for the extensions in this NIFI")
                         return
                     }
 
@@ -841,13 +840,13 @@ open class NarTask : DefaultTask() {
 //
 //            val serviceDefinitionClass = serviceDefinition as Class<*>
 //            val extensionClassLoader = serviceDefinitionClass!!.getClassLoader() as ExtensionClassLoader
-//            val narArtifact = extensionClassLoader.getNarArtifact()
+//            val nifiArtifact = extensionClassLoader.getNifiArtifact()
 //
 //            val serviceAPIDefinition = StandardServiceAPIDefinition(
 //                    serviceDefinitionClass!!.getName(),
-//                    narArtifact.getGroupId(),
-//                    narArtifact.getArtifactId(),
-//                    narArtifact.getBaseVersion()
+//                    nifiArtifact.getGroupId(),
+//                    nifiArtifact.getArtifactId(),
+//                    nifiArtifact.getBaseVersion()
 //            )
 //
 //            requiredServiceAPIDefinitions.put(propName, serviceAPIDefinition)
@@ -999,8 +998,8 @@ open class NarTask : DefaultTask() {
 //        filter.addFilter(GroupIdFilter(this.includeGroupIds.get(), this.excludeGroupIds.get()))
 //        filter.addFilter(ArtifactIdFilter(this.includeArtifactIds.get(), this.excludeArtifactIds.get()))
 //
-//        // explicitly filter our nar dependencies
-//        filter.addFilter(TypeFilter("", "nar"))
+//        // explicitly filter our nifi dependencies
+//        filter.addFilter(TypeFilter("", "nifi"))
 //
 //        // start with all artifacts.
 //        val artifactHandler = getProject().getArtifacts()
@@ -1107,24 +1106,24 @@ open class NarTask : DefaultTask() {
     }
 
     @Throws(GradleException::class)
-    private fun makeNar(archive: Jar) {
-        val narFile = createArchive(archive)
+    private fun makeNifi(archive: Jar) {
+        val nifiFile = createArchive(archive)
 
-        // TODO What is the proper way to write the nar?
+        // TODO What is the proper way to write the nifi?
         if (archiveClassifier != null) {
-            //this.getProjectHelper().attachArtifact(getProject(), "nar", this.getArchiveClassifier(), narFile);
+            //this.getProjectHelper().attachArtifact(getProject(), "nifi", this.getArchiveClassifier(), nifiFile);
         } else {
-            //getProject().getArtifacts().setFile(narFile);
+            //getProject().getArtifacts().setFile(nifiFile);
         }
     }
 
     @Throws(GradleException::class)
     fun createArchive(archive: Jar): File {
         val outputDirectory = this.projectBuildDirectory.get().getAsFile()
-        val narFile = getNarFile(outputDirectory, this.finalName, archiveClassifier)
+        val nifiFile = getNifiFile(outputDirectory, this.finalName, archiveClassifier)
 //        val archiver = MavenArchiver()
 //        archiver.setArchiver(this.jarArchiver)
-//        archiver.setOutputFile(narFile)
+//        archiver.setOutputFile(nifiFile)
         // TODO archiver does not have the proper method?
         // archiver.setForced(this.forceCreation.get());
 
@@ -1134,7 +1133,7 @@ open class NarTask : DefaultTask() {
                 // TODO problem with Maven archiver.
                 // archiver.getArchiver().addDirectory(contentDirectory, getIncludeArray(), getExcludeArray());
             } else {
-                logger.warn("NAR will be empty - no content was marked for inclusion!")
+                logger.warn("NIFI will be empty - no content was marked for inclusion!")
             }
 
             val extensionDocsFile = extensionsDocumentationFile
@@ -1142,7 +1141,7 @@ open class NarTask : DefaultTask() {
                 // TODO problem with Maven archiver
                 // archiver.getArchiver().addFile(extensionDocsFile, "META-INF/docs/" + extensionDocsFile.getName());
             } else {
-                logger.warn("NAR will not contain any Extensions' documentation - no META-INF/" + extensionDocsFile.getName() + " file found!")
+                logger.warn("NIFI will not contain any Extensions' documentation - no META-INF/" + extensionDocsFile.getName() + " file found!")
             }
 
             val additionalDetailsDirectory = File(extensionsDocumentationFile.getParentFile(), "additional-details")
@@ -1161,28 +1160,28 @@ open class NarTask : DefaultTask() {
             }
 
             archive.manifest.attributes(  mapOf(
-                    "Nar-Id" to this.narId,
-                    "Nar-Group" to this.narGroup,
-                    "Nar-Version" to this.narVersion
+                    "Nifi-Id" to this.nifiId,
+                    "Nifi-Group" to this.nifiGroup,
+                    "Nifi-Version" to this.nifiVersion
             ) )
 
-            // look for a nar dependency
-            val narDependency = this.narDependency
-            if (narDependency != null) {
-                val narDependencyGroup =
-                        if (notEmpty(this.narDependencyGroup.get())) this.narDependencyGroup.get()
-                        else narDependency.groupId
-                val narDependencyId =
-                        if (notEmpty(this.narDependencyId.get())) this.narDependencyId.get()
-                        else narDependency.artifactId
-                val narDependencyVersion =
-                        if (notEmpty(this.narDependencyVersion.get())) this.narDependencyVersion.get()
-                        else narDependency.version
+            // look for a nifi dependency
+            val nifiDependency = this.nifiDependency
+            if (nifiDependency != null) {
+                val nifiDependencyGroup =
+                        if (notEmpty(this.nifiDependencyGroup.get())) this.nifiDependencyGroup.get()
+                        else nifiDependency.groupId
+                val nifiDependencyId =
+                        if (notEmpty(this.nifiDependencyId.get())) this.nifiDependencyId.get()
+                        else nifiDependency.artifactId
+                val nifiDependencyVersion =
+                        if (notEmpty(this.nifiDependencyVersion.get())) this.nifiDependencyVersion.get()
+                        else nifiDependency.version
 
                 archive.manifest.attributes(  mapOf(
-                        "Nar-Dependency-Id" to narDependencyId,
-                        "Nar-Dependency-Group" to narDependencyGroup,
-                        "Nar-Dependency-Version" to narDependencyVersion
+                        "Nifi-Dependency-Id" to nifiDependencyId,
+                        "Nifi-Dependency-Group" to nifiDependencyGroup,
+                        "Nifi-Dependency-Version" to nifiDependencyVersion
                 ) )
             }
 
@@ -1202,9 +1201,9 @@ open class NarTask : DefaultTask() {
 
             // archive.into( archiveFileName )
             archive.run {  }
-            return narFile
+            return nifiFile
         } catch (ex: Exception) {
-            throw GradleException("Error assembling NAR", ex)
+            throw GradleException("Error assembling NIFI", ex)
         }
     }
 
@@ -1217,7 +1216,7 @@ open class NarTask : DefaultTask() {
     }
 
 
-    protected fun getNarFile(basedir: File, finalName: String, in_archiveClassifier: String?): File {
+    protected fun getNifiFile(basedir: File, finalName: String, in_archiveClassifier: String?): File {
         var archiveClassifier = in_archiveClassifier
         if (archiveClassifier == null) {
             archiveClassifier = ""
@@ -1225,10 +1224,10 @@ open class NarTask : DefaultTask() {
             archiveClassifier = "-$archiveClassifier"
         }
 
-        return File(basedir, "$finalName$archiveClassifier.nar")
+        return File(basedir, "$finalName$archiveClassifier.nifi")
     }
 
-    private class NarDependency(val groupId: String, val artifactId: String, val version: String)
+    private class NifiDependency(val groupId: String, val artifactId: String, val version: String)
 
 
 }

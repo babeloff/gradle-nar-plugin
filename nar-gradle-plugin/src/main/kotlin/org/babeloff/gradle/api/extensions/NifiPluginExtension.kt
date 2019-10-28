@@ -8,11 +8,11 @@ import org.gradle.api.Project
 
 /**
  *
- * Extension for the NarPlugin.
+ * Extension for the NifiPlugin.
  *
  *
  */
-open class NarPluginExtension(project: Project) {
+open class NifiPluginExtension(project: Project) {
 
 
 }

@@ -2,7 +2,14 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="nar-gradle-plugin.demo-gradle-plugin.functionalTest" target="11" />
+      <module name="nar-gradle-plugin.demo-gradle-plugin.main" target="11" />
+      <module name="nar-gradle-plugin.demo-gradle-plugin.test" target="11" />
+      <module name="nar-gradle-plugin.greeting-gradle-plugin.main" target="1.8" />
+      <module name="nar-gradle-plugin.greeting-gradle-plugin.test" target="1.8" />
       <module name="nar-gradle-plugin.main" target="11" />
+      <module name="nar-gradle-plugin.nar-gradle-plugin.main" target="1.8" />
+      <module name="nar-gradle-plugin.nar-gradle-plugin.test" target="1.8" />
       <module name="nar-gradle-plugin.test" target="11" />
     </bytecodeTargetLevel>
   </component>

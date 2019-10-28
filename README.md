@@ -1,8 +1,8 @@
-# nar-gradle-plugin
+# nifi-gradle-plugin
 
-A gradle plugin to create nar files for [Apache nifi](http://nifi.apache.org).
+A gradle plugin to create nifi files for [Apache nifi](http://nifi.apache.org).
 
-Originally this was based on gradle-nar-plugin but it has substantially deviated from that source.
+Originally this was based on gradle-nifi-plugin but it has substantially deviated from that source.
 THIS IS NOT READY FOR USE BY ANYBODY!
 
 
@@ -18,37 +18,37 @@ buildscript {
         }
     }
     dependencies {
-        classpath (group="org.babeloff.gradle.plugin.nar", name="nar-gradle-plugin", version="2019.10.0")
+        classpath (group="org.babeloff.gradle.plugin.nifi", name="nifi-gradle-plugin", version="2019.10.0")
     }
 }
 
-apply(plugin="org.babeloff.gradle.plugin.nar")
+apply(plugin="org.babeloff.gradle.plugin.nifi")
 ```
 ## Usage
 
-Run `gradle nar` to execute the nar task and create a nar archive.
+Run `gradle nifi` to execute the nifi task and create a nifi archive.
 
 ## Configuration
 
 This plugin depends on the JavaPlugin.
 If it does not exist it will add it to the build.
 
-### Nar Task
-The plugin adds a new preconfigured task of type Nar named `nar` to the project.
-The Nar class extends Jar and can be modified as such.
-The task is configured to add all runtime dependencies and the jar archive itself to the nar archive.
+### Nifi Task
+The plugin adds a new preconfigured task of type Nifi named `nifi` to the project.
+The Nifi class extends Jar and can be modified as such.
+The task is configured to add all runtime dependencies and the jar archive itself to the nifi archive.
 
-### Nar Parent
-Nar archives can have a parent nar.
+### Nifi Parent
+Nifi archives can have a parent nifi.
 The parent is optional and there can be at maximum one parent.
 The parent relationship is added to the manifest.
-To tell the plugin to add a parent you have to add a nar dependency to the nar configuration.
-The nar configuration is created by the plugin.
-Add the parent nar like this:
+To tell the plugin to add a parent you have to add a nifi dependency to the nifi configuration.
+The nifi configuration is created by the plugin.
+Add the parent nifi like this:
 
 ```kotlin
 dependencies {
-    nar("org.apache.nifi:nifi-standard-services-api-nar:0.2.1")
+    nifi("org.apache.nifi:nifi-standard-services-api-nifi:0.2.1")
 }
 ```
 
@@ -56,30 +56,30 @@ If you add more than one dependency, it will complain and crash the build.
 
 ## Manifest
 
-The manifest of a nar file contains properties to identify the nar file and a parent nar.
+The manifest of a nifi file contains properties to identify the nifi file and a parent nifi.
 This plugin configures the manifest generation to contain the values from the project name, group and version.
-The same goes for the nar parent.
+The same goes for the nifi parent.
 
 ### Default manifest values
 
 Manifest Property Key | Value
 --- | ---
-Nar-Group | project.group
-Nar-Id | project.name
-Nar-Version | project.version
-Nar-Dependency-Group | nar config group
-Nar-Dependency-Id | nar config name
-Nar-Dependency-Version | nar config version
+Nifi-Group | project.group
+Nifi-Id | project.name
+Nifi-Version | project.version
+Nifi-Dependency-Group | nifi config group
+Nifi-Dependency-Id | nifi config name
+Nifi-Dependency-Version | nifi config version
 
 ### Override manifest values
 The plugin respects manifest overrides from the user.
 For example:
 
 ```kotlin
-nar {
+nifi {
     manifest {
         attributes (
-            "Nar-Group" to "overriden-nar-group-value"
+            "Nifi-Group" to "overriden-nifi-group-value"
         )
     }
 }
@@ -89,7 +89,7 @@ A full description can be found at https://docs.gradle.org/current/userguide/jav
 
 ## Shortcomings
 
-The goal is to be feature compatible with the reference implementation nifi-nar-maven-plugin.
+The goal is to be feature compatible with the reference implementation nifi-nifi-maven-plugin.
 
 * https://github.com/apache/nifi-maven
 * https://cwiki.apache.org/confluence/display/NIFI/Maven+Projects+for+Extensions
@@ -98,7 +98,7 @@ The goal is to be feature compatible with the reference implementation nifi-nar-
 
 ```kotlin
 configurations {
-    compileOnly.extendsFrom(configurations.nar)
+    compileOnly.extendsFrom(configurations.nifi)
 }
 ```
 
