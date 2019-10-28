@@ -138,15 +138,24 @@ class NifiPlugin : Plugin<Project>
             enforceDocGeneration.set(false)
 
 
-            into(DEPENDENCIES_FILE) {
-                from()
-            }
-            into(LICENSE_FILE) {
-                from()
-            }
-            into(NOTICE_FILE) {
-                from()
-            }
+            /**
+             * gradle dependendies produces suitable output
+             */
+//            into(DEPENDENCIES_FILE) {
+//                from()
+//            }
+            /**
+             * select a stock license or submit your own
+             */
+//            into(LICENSE_FILE) {
+//                from()
+//            }
+            /**
+             * Not sure what this file is for
+             */
+//            into(NOTICE_FILE) {
+//                from()
+//            }
         }
 
         /**
