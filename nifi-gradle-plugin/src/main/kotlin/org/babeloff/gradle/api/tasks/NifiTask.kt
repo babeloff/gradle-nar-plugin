@@ -591,19 +591,29 @@ abstract val excludeArtifactIds: Property<String>
     abstract val parentArchiveConfig : Property<Configuration?>
     init {
         logger.info("configuring nifi task")
-        parentArchiveConfig.set(null)
+        parentArchiveConfig.set(null as Configuration?)
     }
 
     /** Configure Manifest */
     init {
         val attr = this.manifest.attributes
-        attr.putIfAbsent(NarManifestEntry.NAR_GROUP.manifestName, this.nifiGroup)
-        attr.putIfAbsent(NarManifestEntry.NAR_ID.manifestName, this.nifiId)
+
+        val currentTime = Date()
+        attr.putIfAbsent(NarManifestEntry.BUILD_TIMESTAMP.manifestName, currentTime.toInstant())
+        attr.putIfAbsent("Clone-During-Instance-Class-Loading", "false")
+        attr.putIfAbsent("Archiver-Version", "Plexus Archiver")
+
+        attr.putIfAbsent(NarManifestEntry.BUILT_BY.manifestName, "todo")
         attr.putIfAbsent(NarManifestEntry.NAR_VERSION.manifestName, this.nifiVersion)
+        attr.putIfAbsent(NarManifestEntry.BUILD_TAG.manifestName, "HEAD")
+        attr.putIfAbsent(NarManifestEntry.NAR_ID.manifestName, this.nifiId)
+        attr.putIfAbsent(NarManifestEntry.NAR_GROUP.manifestName, this.nifiGroup)
+        attr.putIfAbsent("Created-By", "Gradle 6.0")
+        attr.putIfAbsent(NarManifestEntry.BUILD_JDK.manifestName, "1.8.0_131")
     }
 
     /** Configure Parent Manifest */
-    init {
+//    init {
 //        val config = this.parentArchiveConfig.get()
 //        when {
 //            config == null -> {}
@@ -617,7 +627,7 @@ abstract val excludeArtifactIds: Property<String>
 //                attr.putIfAbsent(NarManifestEntry.NAR_DEPENDENCY_VERSION.manifestName, this.nifiDependencyVersion)
 //            }
 //        }
-    }
+//    }
 
     /**
      *

@@ -9,7 +9,7 @@ plugins {
     `java-gradle-plugin`
     id("com.gradle.plugin-publish")
     id ("idea")
-    `maven-publish`
+    //`maven-publish`
 }
 
 group = "org.babeloff"
